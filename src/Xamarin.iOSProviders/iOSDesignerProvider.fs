@@ -22,6 +22,7 @@ module Option =
         if success then Some(value) else None
 
 module Sanitise =
+    let cleanTrailing = String.trimEnd [|':'|]
     let makeFieldName (name:string) = 
         "__" +
         (name |> String.uncapitalize |> String.trimEnd [|':'|])
@@ -47,8 +48,8 @@ module BindingFlags =
 [<AutoOpenAttribute>]
 module TypeExt =
     type Type with
-        member x.GetConstructor(tt) =
-            x.GetConstructor([|tt|])
+        member x.GetConstructor(typ) =
+            x.GetConstructor([|typ|])
         member x.GetUnitConstructor() =
             x.GetConstructor([||])         
           
@@ -170,7 +171,7 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
             |> Array.map (fun outlet ->
                 let backingField = ProvidedField(Sanitise.makeFieldName outlet.Name + "Outlet", outlet.Type)
 
-                let property = ProvidedProperty(Sanitise.makePropertyName outlet.Name + "Outlet", outlet.Type)
+                let property = ProvidedProperty(Sanitise.cleanTrailing outlet.Name, outlet.Type)
 
                 property.GetterCode <- fun args -> Expr.FieldGet(args.[0], backingField)
                 property.SetterCode <- fun args -> Expr.FieldSet(args.[0], backingField, args.[1])
