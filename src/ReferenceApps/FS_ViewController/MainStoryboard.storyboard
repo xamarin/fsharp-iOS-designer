@@ -37,8 +37,8 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
                     <connections>
-                        <outlet property="theButton" destination="Drf-C1-sTA" id="name-outlet-Drf-C1-sTA"/>
-                        <outlet property="theLAbel" destination="HHW-5o-DAS" id="name-outlet-HHW-5o-DAS"/>
+<!--                        <outlet property="theButton" destination="Drf-C1-sTA" id="name-outlet-Drf-C1-sTA"/>
+                        <outlet property="theLAbel" destination="HHW-5o-DAS" id="name-outlet-HHW-5o-DAS"/>-->
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
