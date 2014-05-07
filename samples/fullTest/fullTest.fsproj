@@ -110,7 +110,7 @@
     <Reference Include="System.Core" />
     <Reference Include="monotouch" />
     <Reference Include="Xamarin.iOSProviders">
-      <HintPath>..\..\IOSTypeProviderTests\iOSDesignerTypeProvider\bin\Debug\Xamarin.iOSProviders.dll</HintPath>
+      <HintPath>..\..\src\Xamarin.iOSProviders\bin\Debug\Xamarin.iOSProviders.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
