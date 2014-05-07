@@ -5,8 +5,8 @@ open MonoTouch.UIKit
 open MonoTouch.Foundation
 open Xamarin.iOSProviders
 
-type fstestViewController = Xamarin.iOSProviders.UIProvider<"Main.storyboard">
-type multiController = Xamarin.iOSProviders.UIProvider<"multitest.storyboard">
+type fstestViewController = Xamarin.iOSProviders.UIProvider<"../StoryBoards/Main.storyboard">
+type multiController = Xamarin.iOSProviders.UIProvider<"../StoryBoards/multitest.storyboard">
 
 [<Register ("AppDelegate")>]
 type AppDelegate () =
@@ -21,8 +21,9 @@ type AppDelegate () =
 
     override this.FinishedLaunching (app, options) =
         
-        //vc.OnClickUp <-
-        //    fun _ -> printfn "Hello"
+        //action applied as a lambda, also available as an observable soon too.
+        vc.OnClickUp <- fun _ -> printfn "Hello"
+
         vc.View.BackgroundColor <- UIColor.Red
         window.RootViewController <- vc
         window.MakeKeyAndVisible ()
