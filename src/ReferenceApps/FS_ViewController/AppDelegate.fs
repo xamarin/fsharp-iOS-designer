@@ -5,7 +5,7 @@ open MonoTouch.UIKit
 open MonoTouch.Foundation
 
 [<Register ("AppDelegate")>]
-type AppDelegate() as x =
+type AppDelegate() as this =
     inherit UIApplicationDelegate ()
 
     let vc = new fsReferenceViewController ()
@@ -17,6 +17,10 @@ type AppDelegate() as x =
 //        true
 //
     override x.Window = window
+
+    override x.FinishedLaunching (app, options) =
+        vc.OnClickUpAction <- fun _ -> ()
+        true
 
 module Main =
     [<EntryPoint>]

@@ -10,6 +10,8 @@ open MonoTouch.UIKit
 type fsReferenceViewController () =
     inherit UIViewController ()
 
+    let mutable __mytouchup = Unchecked.defaultof<Action<UIButton>>
+
     override x.DidReceiveMemoryWarning () =
         // Releases the view if it doesn't have a superview.
         base.DidReceiveMemoryWarning ()
@@ -26,3 +28,12 @@ type fsReferenceViewController () =
            toInterfaceOrientation <> UIInterfaceOrientation.PortraitUpsideDown
         else
            true
+
+    member x.OnClickUpAction
+        with get() = __mytouchup
+        and set v = __mytouchup <- v
+
+
+    [<Action ("OnClickUp:")>]
+    member x.OnClickUp ( sender: UIButton) =
+        if __mytouchup <> null then __mytouchup.Invoke sender
