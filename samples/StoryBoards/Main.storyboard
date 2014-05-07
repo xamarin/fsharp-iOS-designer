@@ -52,7 +52,7 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
                     <connections>
-                        <outlet property="myButton44" destination="Drf-C1-sTA" id="Fxc-Qv-z8H"/>
+                        <outlet property="myButton" destination="Drf-C1-sTA" id="Fxc-Qv-z8H"/>
                         <outlet property="mySegment" destination="eGB-1t-5Nq" id="AnF-eU-9le"/>
                         <outlet property="myText" destination="mh3-1S-Ini" id="efh-oj-qdd"/>
                     </connections>
