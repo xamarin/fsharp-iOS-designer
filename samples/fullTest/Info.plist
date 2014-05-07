@@ -31,6 +31,6 @@
 	<key>CFBundleVersion</key>
 	<string>1.0</string>
 	<key>UIMainStoryboardFile</key>
-	<string>MainStoryboard</string>
+	<string>Main</string>
 </dict>
 </plist>
