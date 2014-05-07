@@ -212,7 +212,7 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
 
 
         let releaseOutletsMethod = ProvidedMethod("ReleaseDesignerOutlets", [], typeof<Void>, 
-                                                  InvokeCode = fun args -> if Seq.isEmpty providedOutlets then
+                                                  InvokeCode = fun args -> if Array.isEmpty providedOutlets then
                                                                                 <@@ () @@>
                                                                            else
                                                                                 let code = makeReleaseOutletsExpr args.[0] providedOutlets
