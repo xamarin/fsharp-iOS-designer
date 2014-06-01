@@ -20,33 +20,21 @@ namespace cstest
 
 		[Outlet]
 		[GeneratedCode ("iOS Designer", "1.0")]
-		UILabel myLabel { get; set; }
-
-		[Outlet]
-		[GeneratedCode ("iOS Designer", "1.0")]
 		UISegmentedControl mySegment { get; set; }
 
 		[Outlet]
 		[GeneratedCode ("iOS Designer", "1.0")]
 		UITextField myText { get; set; }
 
-		[Action ("mytouchup:")]
+		[Action ("touchup:")]
 		[GeneratedCode ("iOS Designer", "1.0")]
-		partial void mytouchup (UIButton sender);
-
-		[Action ("OnClickUp:")]
-		[GeneratedCode ("iOS Designer", "1.0")]
-		partial void OnClickUp (UIButton sender);
+		partial void touchup (UIButton sender);
 
 		void ReleaseDesignerOutlets ()
 		{
 			if (myButton != null) {
 				myButton.Dispose ();
 				myButton = null;
-			}
-			if (myLabel != null) {
-				myLabel.Dispose ();
-				myLabel = null;
 			}
 			if (mySegment != null) {
 				mySegment.Dispose ();

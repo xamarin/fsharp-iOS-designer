@@ -22,7 +22,5 @@
 	</array>
 	<key>MinimumOSVersion</key>
 	<string>7.1</string>
-	<key>UIMainStoryboardFile</key>
-	<string>MainStoryboard</string>
 </dict>
 </plist>

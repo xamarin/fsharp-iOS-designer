@@ -5,26 +5,17 @@ open MonoTouch.UIKit
 open MonoTouch.Foundation
 
 [<Register ("AppDelegate")>]
-type AppDelegate() as this =
+type AppDelegate() =
     inherit UIApplicationDelegate ()
 
-    let vc = new fsReferenceViewController ()
-    let window = new UIWindow(UIScreen.MainScreen.Bounds, RootViewController=vc)
+    let mainStoryboard = UIStoryboard.FromName ("MainStoryboard", null)
+    let initialViewController = mainStoryboard.InstantiateInitialViewController () :?> fsReferenceViewController
+    let window = new UIWindow(UIScreen.MainScreen.Bounds, RootViewController= initialViewController)
 
-    //This method is invoked when the application is ready to run.
-//    override this.FinishedLaunching (app, options) =
-//        x.Window.MakeKeyAndVisible()
-//        true
-//
-    override x.Window = window
-
-    override x.FinishedLaunching (app, options) =
-        vc.OnClickUpAction <- fun _ -> ()
+    override x.FinishedLaunching(app, options) =
+        initialViewController.OnClickUpAction <- (fun _ -> initialViewController.View.BackgroundColor <- UIColor.Red )
+        window.MakeKeyAndVisible ()
         true
 
 module Main =
-    [<EntryPoint>]
-    let main args =
-        UIApplication.Main (args, null, "AppDelegate")
-        0
-
+    UIApplication.Main ([||], null, "AppDelegate")

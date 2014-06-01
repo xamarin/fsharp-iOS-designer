@@ -23,8 +23,7 @@
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <connections>
-                                    <action selector="OnClickUp:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="axV-77-zLn"/>
-                                    <action selector="mytouchup:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="qsV-2q-enJ"/>
+                                    <action selector="touchup:" destination="vXZ-lx-hvc" id="1" eventType="touchUpInside"/>
                                 </connections>
                             </button>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Just some simple text" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HHW-5o-DAS">
