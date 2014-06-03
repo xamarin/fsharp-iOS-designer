@@ -26,6 +26,7 @@ type internal ExpectedStackState =
 
 [<AutoOpen>]
 module internal Misc =
+    let runningOnMono = try System.Type.GetType("Mono.Runtime") <> null with e -> false 
     let TypeBuilderInstantiationType = 
         if runningOnMono
         then typeof<TypeBuilder>.Assembly.GetType("System.Reflection.MonoGenericClass")

@@ -229,7 +229,7 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
         viewControllerType
 
     do  rootType.DefineStaticParameters([ProvidedStaticParameter("DesignerFile", typeof<string>)], buildTypes) 
-    do this.AddNamespace(ns, [rootType])
+        this.AddNamespace(ns, [rootType])
 
     interface IDisposable with
         member x.Dispose() =
