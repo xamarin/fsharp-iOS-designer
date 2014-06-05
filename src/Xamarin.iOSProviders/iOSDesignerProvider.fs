@@ -213,8 +213,7 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
 
 
         let releaseOutletsMethod = ProvidedMethod("ReleaseDesignerOutlets", [], typeof<Void>, 
-                                                  InvokeCode = fun args -> if Array.isEmpty providedOutlets then
-                                                                                <@@ () @@>
+                                                  InvokeCode = fun args -> if Array.isEmpty providedOutlets then Expr.emptyInvoke ()
                                                                            else
                                                                                 let code = makeReleaseOutletsExpr args.[0] providedOutlets
                                                                                 let decompiled = code.Decompile()
@@ -222,13 +221,25 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
         viewControllerType.AddMember releaseOutletsMethod
         //outlets-----------------------------------------
 
+        //static helpers
+        let staticHelper =
+            let storyboardName = designerFile.AbsolutePath |> Path.GetFileNameWithoutExtension
+            ProvidedMethod("CreateInitialViewController", [], viewControllerType,
+                           IsStaticMethod = true,
+                           InvokeCode = fun args -> let viewController = 
+                                                        <@@ let mainStoryboard = UIStoryboard.FromName (storyboardName, null)
+                                                            mainStoryboard.InstantiateInitialViewController () @@>
+                                                    Expr.Coerce (viewController, viewControllerType) )
+
+        viewControllerType.AddMember staticHelper
+
         //pump types into the correct assembly
         let assembly = ProvidedAssembly(Path.ChangeExtension(Path.GetTempFileName(), ".dll"))
         assembly.AddTypes [viewControllerType]
 
         viewControllerType
 
-    do  rootType.DefineStaticParameters([ProvidedStaticParameter("DesignerFile", typeof<string>)], buildTypes) 
+    do  rootType.DefineStaticParameters([ProvidedStaticParameter ("DesignerFile", typeof<string>)], buildTypes) 
         this.AddNamespace(ns, [rootType])
 
     interface IDisposable with

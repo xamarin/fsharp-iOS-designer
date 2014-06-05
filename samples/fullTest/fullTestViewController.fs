@@ -11,8 +11,7 @@ type myViewController = Xamarin.iOSProviders.UIProvider<"../StoryBoards/Main.sto
 type AppDelegate () =
     inherit UIApplicationDelegate ()
 
-    let mainStoryboard = UIStoryboard.FromName ("Main", null)
-    let initialViewController = mainStoryboard.InstantiateInitialViewController () :?> myViewController
+    let initialViewController = myViewController.CreateInitialViewController()
     let window = new UIWindow(UIScreen.MainScreen.Bounds, RootViewController= initialViewController)
 
     override this.FinishedLaunching (app, options) =

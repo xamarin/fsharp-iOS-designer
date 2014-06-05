@@ -5,7 +5,7 @@ Project("{4925A630-B079-445d-BCD4-3A9C94FE9307}") = "Xamarin.iOSProviders", "Xam
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Testing", "Testing", "{835C1917-49E0-4AE0-B182-74434DB0D3DB}"
 EndProject
-Project("{4925A630-B079-445d-BCD4-3A9C94FE9307}") = "DisposalIssue", "Testing\DisposalIssue\DisposalIssue.fsproj", "{03D202B0-123E-4397-BCA9-36129CBA8518}"
+Project("{4925A630-B079-445D-BCD4-3A9C94FE9307}") = "DisposalIssue", "Testing\DisposalIssue\DisposalIssue.fsproj", "{03D202B0-123E-4397-BCA9-36129CBA8518}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ReferenceApps", "ReferenceApps", "{BE30658A-D953-4502-BC46-8FA995D94269}"
 EndProject
@@ -13,7 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CS_MasterDetail", "Referenc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CS_ViewController", "ReferenceApps\CS_ViewController\CS_ViewController.csproj", "{F48CC224-6953-45C3-B830-1F25154AF3DD}"
 EndProject
-Project("{4925A630-B079-445d-BCD4-3A9C94FE9307}") = "FS_ViewController", "ReferenceApps\FS_ViewController\FS_ViewController.fsproj", "{AEBE047E-D853-4C3C-B6BC-AF12F8339470}"
+Project("{4925A630-B079-445D-BCD4-3A9C94FE9307}") = "FS_ViewController", "ReferenceApps\FS_ViewController\FS_ViewController.fsproj", "{AEBE047E-D853-4C3C-B6BC-AF12F8339470}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
