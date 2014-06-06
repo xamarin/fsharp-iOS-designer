@@ -12,6 +12,12 @@ namespace cstest
         public cstestViewController (IntPtr handle) : base (handle)
         {
         }
+
+        public override void ViewDidLoad ()
+		{
+			base.ViewDidLoad ();
+
+		}
     }
 }
 
