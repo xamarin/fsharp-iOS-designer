@@ -158,6 +158,33 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
             viewControllerType.AddMember actionBinding
         //end actions-----------------------------------------
 
+        //ViewDidLoad
+        //perhaps refactor this and others to a custom base clas just for F#
+
+        //create a backing field
+        let viewDidLoadField = ProvidedField (Sanitise.makeFieldName "ViewDidLoadAction", typeof<Action>)
+        viewDidLoadField.SetFieldAttributes FieldAttributes.Private
+
+        //create a property
+        let viewDidLoadProperty =
+            ProvidedProperty(Sanitise.makePropertyName "ViewDidLoadAction", typeof<Action>,
+                             GetterCode = (fun args -> Expr.FieldGet(args.[0], viewDidLoadField)),
+                             SetterCode = fun args -> Expr.FieldSet(args.[0], viewDidLoadField, args.[1]))
+
+        //create the override to call our property (If set)
+        let viewDidLoadAction = ProvidedMethod ("ViewDidLoadAction", [], typeof<Void>,
+                                 InvokeCode = fun args -> let instance = Expr.Cast<Action>(Expr.FieldGet(args.[0], viewDidLoadField))
+                                                          <@@ if %instance <> null then (%instance).Invoke() @@>)
+
+        viewDidLoadAction.SetMethodAttrs (MethodAttributes.Virtual)
+
+        let viewDidLoadMeth= typeof<UIViewController>.GetMethod ("ViewDidLoad")
+        viewControllerType.DefineMethodOverride (viewDidLoadAction, viewDidLoadMeth)
+        viewControllerType.AddMember viewDidLoadField
+        viewControllerType.AddMember viewDidLoadProperty
+        viewControllerType.AddMember viewDidLoadAction
+        //-----------------------------------------------------------------------
+
         let makeReleaseOutletsExpr (instance: Expr) (outlets:(Expr -> Expr) array)=
             match outlets with
             | [|single|] -> single instance
@@ -213,11 +240,12 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
 
 
         let releaseOutletsMethod = ProvidedMethod("ReleaseDesignerOutlets", [], typeof<Void>, 
-                                                  InvokeCode = fun args -> if Array.isEmpty providedOutlets then Expr.emptyInvoke ()
-                                                                           else
-                                                                                let code = makeReleaseOutletsExpr args.[0] providedOutlets
-                                                                                let decompiled = code.Decompile()
-                                                                                code)
+                                                  InvokeCode = function
+                                                               | [instance] -> if Array.isEmpty providedOutlets
+                                                                               then Expr.emptyInvoke ()
+                                                                               else makeReleaseOutletsExpr instance providedOutlets
+                                                               | _ -> invalidOp "Too many arguments")
+                                                                                
         viewControllerType.AddMember releaseOutletsMethod
         //outlets-----------------------------------------
 
@@ -226,10 +254,10 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
             let storyboardName = designerFile.AbsolutePath |> Path.GetFileNameWithoutExtension
             ProvidedMethod("CreateInitialViewController", [], viewControllerType,
                            IsStaticMethod = true,
-                           InvokeCode = fun args -> let viewController = 
-                                                        <@@ let mainStoryboard = UIStoryboard.FromName (storyboardName, null)
-                                                            mainStoryboard.InstantiateInitialViewController () @@>
-                                                    Expr.Coerce (viewController, viewControllerType) )
+                           InvokeCode = fun _ -> let viewController = 
+                                                    <@@ let mainStoryboard = UIStoryboard.FromName (storyboardName, null)
+                                                        mainStoryboard.InstantiateInitialViewController () @@>
+                                                 Expr.Coerce (viewController, viewControllerType) )
 
         viewControllerType.AddMember staticHelper
 
