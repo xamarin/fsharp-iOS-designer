@@ -13,9 +13,6 @@ open Microsoft.FSharp.Quotations
 open MonoTouch.Foundation
 open MonoTouch.UIKit
 open Microsoft.FSharp.Compatibility.OCaml
-open Swensen.Unquote
-open Swensen.Unquote.Extensions
-open Swensen.Unquote.Operators
 
 module Option =
     let fromBoolAndOut (success,value) =
