@@ -15,7 +15,8 @@ type AppDelegate () =
     let initialViewController = myViewController.CreateInitialViewController()
     //this shows a possibility to access the outlets that are generated from the storyboard via the ViewDidLoadAction
     do initialViewController.ViewDidLoadAction <-
-        fun _ -> initialViewController.myButton.TouchDown.Add (fun _ -> initialViewController.View.BackgroundColor <- UIColor.Blue) 
+        fun _ -> initialViewController.View.ContentMode <- UIViewContentMode.ScaleToFill
+                 initialViewController.MyButton.TouchDown.Add (fun _ -> initialViewController.View.BackgroundColor <- UIColor.Blue) 
 
     let window = new UIWindow(UIScreen.MainScreen.Bounds, RootViewController= initialViewController)
 

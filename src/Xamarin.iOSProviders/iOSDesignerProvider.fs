@@ -142,7 +142,7 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
         viewControllerType.AddCustomAttribute(register)
 
         //actions mutable assignment style----------------------------
-        //TODO add option for ObservableSource<NSObject>
+        //TODO add option for ObservableSource<NSObject>, potentially unneeded as outlets exposes this with observable...
         for action in actions do
             //create a backing field fand property or the action
             let actionField, actionProperty = ProvidedTypes.ProvidedPropertyWithField( action.selector, typeof<Action<NSObject>>)
@@ -163,15 +163,15 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
         //end actions-----------------------------------------
 
         //ViewDidLoad
-        //perhaps refactor this and others to a custom base clas just for F#
+        //perhaps refactor this and others to a custom base class just for F#
 
         //create a backing field
         let viewDidLoadField, viewDidLoadProperty = ProvidedTypes.ProvidedPropertyWithField ("ViewDidLoadAction", typeof<Action>)
 
         //create the override to call our property (If set)
         let viewDidLoadAction = ProvidedMethod ("ViewDidLoadAction", [], typeof<Void>,
-                                 InvokeCode = fun args -> let instance = Expr.Cast<Action>(Expr.FieldGet(args.[0], viewDidLoadField))
-                                                          <@@ if %instance <> null then (%instance).Invoke() @@>)
+                                                InvokeCode = fun args -> let instance = Expr.Cast<Action>(Expr.FieldGet(args.[0], viewDidLoadField))
+                                                                         <@@ if %instance <> null then (%instance).Invoke() @@>)
 
         viewDidLoadAction.SetMethodAttrs (MethodAttributes.Virtual)
 
@@ -193,17 +193,12 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
         let providedOutlets = 
             outlets
             |> Array.map (fun outlet ->
-                let backingField = ProvidedField(Sanitise.makeFieldName outlet.Name + "Outlet", outlet.Type)
-
-                let property = ProvidedProperty(Sanitise.cleanTrailing outlet.Name, outlet.Type)
-
-                property.GetterCode <- fun args -> Expr.FieldGet(args.[0], backingField)
-                property.SetterCode <- fun args -> Expr.FieldSet(args.[0], backingField, args.[1])
-                property.AddCustomAttribute <| Attributes.MakeOutletAttributeData()
+                let outletField, outletProperty = ProvidedTypes.ProvidedPropertyWithField( outlet.Name, outlet.Type)
+                outletProperty.AddCustomAttribute <| Attributes.MakeOutletAttributeData()
 
                 ///takes an instance returns a disposal expresion
                 let disposal(instance) =
-                    let get = Expr.FieldGet(instance, backingField)
+                    let get = Expr.FieldGet(instance, outletField)
                     let field = Expr.Coerce(get, typeof<obj>)
                     <@@ if %%field <>  null then
                            ((%%field:obj) :?> IDisposable).Dispose() @@>
@@ -227,8 +222,8 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
                 //Expr.IfThenElse(guard, trueblock, <@@ () @@>)
 
                 //Add the property and backing fields to the view controller
-                viewControllerType.AddMember backingField
-                viewControllerType.AddMember property
+                viewControllerType.AddMember outletField
+                viewControllerType.AddMember outletProperty
 
                 disposal)       
 
@@ -236,13 +231,13 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
 
 
 
-        let releaseOutletsMethod = ProvidedMethod("ReleaseDesignerOutlets", [], typeof<Void>, 
-                                                  InvokeCode = function
-                                                               | [instance] -> if Array.isEmpty providedOutlets
-                                                                               then Expr.emptyInvoke ()
-                                                                               else makeReleaseOutletsExpr instance providedOutlets
-                                                               | _ -> invalidOp "Too many arguments")
-                                                                                
+        let releaseOutletsMethod =
+            ProvidedMethod("ReleaseDesignerOutlets", [], typeof<Void>, 
+                           InvokeCode = function
+                                        | [instance] -> if Array.isEmpty providedOutlets then Expr.emptyInvoke ()
+                                                        else makeReleaseOutletsExpr instance providedOutlets
+                                        | _ -> invalidOp "Too many arguments")
+                                                                                 
         viewControllerType.AddMember releaseOutletsMethod
         //outlets-----------------------------------------
 
