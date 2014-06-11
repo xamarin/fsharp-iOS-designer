@@ -31,16 +31,30 @@ module Sanitise =
         (name |> String.capitalize |> String.trimEnd [|':'|])  + "Selector"
 
 module Expr =
-
     /// This helper makes working with Expr.Let a little easier and safer
     let LetVar(varName, expr:Expr, f) =  
         let var = Var(varName, expr.Type)
         Expr.Let(var, expr, f (Expr.Var var))
+
     //creates an empty expression in the form of a unit or ()
     let emptyInvoke = fun _ -> <@@ () @@>
 
 module BindingFlags =
     let publicInstance = BindingFlags.Public ||| BindingFlags.Instance
+
+type ProvidedTypes() =
+    static member ProvidedPropertyWithField(name, typ, ?parameters: ProvidedParameter list) =
+        
+        let field = ProvidedField( Sanitise.makePropertyName name, typ)
+        field.SetFieldAttributes FieldAttributes.Private
+
+        let property = ProvidedProperty(Sanitise.makePropertyName name, typ, defaultArg parameters [])
+        property.GetterCode <- fun args -> Expr.FieldGet(args.[0], field)
+        property.SetterCode <- fun args -> Expr.FieldSet(args.[0], field, args.[1])
+
+        field,property
+
+
 
 [<AutoOpenAttribute>]
 module TypeExt =
@@ -130,15 +144,8 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
         //actions mutable assignment style----------------------------
         //TODO add option for ObservableSource<NSObject>
         for action in actions do
-            //create a backing field for the action
-            let actionField = ProvidedField(Sanitise.makeFieldName action.selector, typeof<Action<NSObject>>)
-            actionField.SetFieldAttributes FieldAttributes.Private
-
-            //create a property for the action
-            let actionProperty =
-                ProvidedProperty(Sanitise.makePropertyName action.selector, typeof<Action<NSObject>>,
-                                 GetterCode = (fun args -> Expr.FieldGet(args.[0], actionField)),
-                                 SetterCode = fun args -> Expr.FieldSet(args.[0], actionField, args.[1]))
+            //create a backing field fand property or the action
+            let actionField, actionProperty = ProvidedTypes.ProvidedPropertyWithField( action.selector, typeof<Action<NSObject>>)
             
             let actionBinding =
                 ProvidedMethod(methodName=Sanitise.makeMethodName action.selector, 
@@ -159,14 +166,7 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
         //perhaps refactor this and others to a custom base clas just for F#
 
         //create a backing field
-        let viewDidLoadField = ProvidedField (Sanitise.makeFieldName "ViewDidLoadAction", typeof<Action>)
-        viewDidLoadField.SetFieldAttributes FieldAttributes.Private
-
-        //create a property
-        let viewDidLoadProperty =
-            ProvidedProperty(Sanitise.makePropertyName "ViewDidLoadAction", typeof<Action>,
-                             GetterCode = (fun args -> Expr.FieldGet(args.[0], viewDidLoadField)),
-                             SetterCode = fun args -> Expr.FieldSet(args.[0], viewDidLoadField, args.[1]))
+        let viewDidLoadField, viewDidLoadProperty = ProvidedTypes.ProvidedPropertyWithField ("ViewDidLoadAction", typeof<Action>)
 
         //create the override to call our property (If set)
         let viewDidLoadAction = ProvidedMethod ("ViewDidLoadAction", [], typeof<Void>,
