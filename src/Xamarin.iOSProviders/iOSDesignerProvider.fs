@@ -108,7 +108,10 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
             let filename = parameterValues.[0] :?> string
             if Path.IsPathRooted filename then Uri(filename)
             else Uri(Path.Combine [|config.ResolutionFolder; filename |])
+
         let registerViewController = parameterValues.[1] :?> bool
+        let isAbstract = parameterValues.[2] :?> bool
+        let addUnitCtor = parameterValues.[3] :?> bool
 
         let stream, watcherDisposer = IO.openWithWatcher designerFile this.Invalidate
         watchedFile := watcherDisposer
@@ -133,7 +136,8 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
 
         // Generate the required type
         let viewControllerType = ProvidedTypeDefinition(asm, ns, typeName, Some(typeof<UIViewController>), IsErased = false )
-        viewControllerType.SetAttributes (TypeAttributes.Public ||| TypeAttributes.Class)
+        viewControllerType.SetAttributes (if isAbstract then TypeAttributes.Public ||| TypeAttributes.Class ||| TypeAttributes.Abstract
+                                          else TypeAttributes.Public ||| TypeAttributes.Class)
 
         //native ptr ctor
         let ctorInfo = typeof<UIViewController>.GetConstructor(typeof<IntPtr>)
@@ -141,9 +145,10 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
         viewControllerType.AddMember(ctor)
 
         //unit ctor
-        let emptyctorInfo = typeof<UIViewController>.GetUnitConstructor()
-        let emptyctor = ProvidedConstructor([], InvokeCode=Expr.emptyInvoke, BaseConstructorCall = fun args -> emptyctorInfo, args)
-        viewControllerType.AddMember(emptyctor)
+        if addUnitCtor then
+            let emptyctorInfo = typeof<UIViewController>.GetUnitConstructor()
+            let emptyctor = ProvidedConstructor([], InvokeCode=Expr.emptyInvoke, BaseConstructorCall = fun args -> emptyctorInfo, args)
+            viewControllerType.AddMember(emptyctor)
 
         if registerViewController then
             let register = Attributes.MakeRegisterAttributeData viewController.customClass
@@ -236,9 +241,6 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
                 disposal)       
 
 
-
-
-
         let releaseOutletsMethod =
             ProvidedMethod("ReleaseDesignerOutlets", [], typeof<Void>, 
                            InvokeCode = function
@@ -252,7 +254,6 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
         //static helpers
         let staticHelper =
             let storyboardName = designerFile.AbsolutePath |> Path.GetFileNameWithoutExtension
-            //TODO make generic static method
             ProvidedMethod("CreateInitialViewController", [], viewControllerType,
                            IsStaticMethod = true,
                            InvokeCode = fun _ -> let viewController = 
@@ -269,7 +270,10 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
         viewControllerType
 
     do  rootType.DefineStaticParameters([ProvidedStaticParameter ("DesignerFile", typeof<string>)
-                                         ProvidedStaticParameter ("Register", typeof<bool>)], buildTypes) 
+                                         ProvidedStaticParameter ("IsRegistered", typeof<bool>)
+                                         ProvidedStaticParameter ("IsAbstract", typeof<bool>, false)
+                                         ProvidedStaticParameter ("AddUnitCtor", typeof<bool>, false)], buildTypes)
+
         this.AddNamespace(ns, [rootType])
         this.Disposing.Add (fun _ -> if !watchedFile <> null then (!watchedFile).Dispose())
 
