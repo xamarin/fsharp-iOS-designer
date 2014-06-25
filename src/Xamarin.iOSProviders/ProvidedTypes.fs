@@ -285,8 +285,7 @@ module internal Misc =
     let transQuotationToCode isGenerated qexprf (paramNames: string[]) (argExprs: Quotations.Expr[]) = 
         // add let bindings for arguments to ensure that arguments will be evaluated
         let vars = argExprs |> Array.mapi (fun i e -> Quotations.Var(paramNames.[i], e.Type))
-        let expr = qexprf ([for v in vars ->
-                                Quotations.Expr.Var v])
+        let expr = qexprf ([for v in vars -> Quotations.Expr.Var v])
 
         let pairs = Array.zip argExprs vars
         let expr = Array.foldBack (fun (arg, var) e -> Quotations.Expr.Let(var, arg, e)) pairs expr
@@ -997,6 +996,7 @@ type ProvidedTypeDefinition(container:TypeContainer,className : string, baseType
         TypeAttributes.Class ||| 
         TypeAttributes.Sealed |||
         enum (int32 TypeProviderTypeAttributes.IsErased)
+
 
     let mutable baseType   =  lazy baseType
     let mutable membersKnown   = ResizeArray<MemberInfo>()
@@ -2229,6 +2229,8 @@ type TypeProviderForNamespaces(namespacesAndTypes : list<(string * list<Provided
 
     let invalidateE = new Event<EventHandler,EventArgs>()    
 
+    let disposing = Event<EventHandler,EventArgs>()
+
 #if FX_NO_LOCAL_FILESYSTEM
 #else
     let probingFolders = ResizeArray()
@@ -2239,9 +2241,13 @@ type TypeProviderForNamespaces(namespacesAndTypes : list<(string * list<Provided
     new (namespaceName:string,types:list<ProvidedTypeDefinition>) = new TypeProviderForNamespaces([(namespaceName,types)])
     new () = new TypeProviderForNamespaces([])
 
+    [<CLIEvent>]
+    member this.Disposing = disposing.Publish
+
 #if FX_NO_LOCAL_FILESYSTEM
     interface System.IDisposable with 
-        member x.Dispose() = ()
+        member x.Dispose() = 
+            disposing.Trigger(x, EventArgs.Empty)
 #else
     abstract member ResolveAssembly : args : System.ResolveEventArgs -> Assembly
     default this.ResolveAssembly(args) = 
@@ -2262,8 +2268,11 @@ type TypeProviderForNamespaces(namespacesAndTypes : list<(string * list<Provided
         cfg.RuntimeAssembly
         |> IO.Path.GetDirectoryName
         |> this.RegisterProbingFolder
+
     interface System.IDisposable with 
-        member x.Dispose() = AppDomain.CurrentDomain.remove_AssemblyResolve handler
+        member x.Dispose() = 
+            disposing.Trigger(x, EventArgs.Empty)
+            AppDomain.CurrentDomain.remove_AssemblyResolve handler
 #endif
 
     member __.AddNamespace (namespaceName,types:list<_>) = otherNamespaces.Add (namespaceName,types)
