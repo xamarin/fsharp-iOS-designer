@@ -271,10 +271,7 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
     do  rootType.DefineStaticParameters([ProvidedStaticParameter ("DesignerFile", typeof<string>)
                                          ProvidedStaticParameter ("Register", typeof<bool>)], buildTypes) 
         this.AddNamespace(ns, [rootType])
-
-    interface IDisposable with
-        member x.Dispose() =
-            if !watchedFile <> null then (!watchedFile).Dispose()
+        this.Disposing.Add (fun _ -> if !watchedFile <> null then (!watchedFile).Dispose())
 
 [<assembly:TypeProviderAssembly()>] 
 do()
