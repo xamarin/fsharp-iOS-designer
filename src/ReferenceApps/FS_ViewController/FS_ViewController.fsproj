@@ -4,11 +4,10 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">iPhoneSimulator</Platform>
     <ProjectGuid>{AEBE047E-D853-4C3C-B6BC-AF12F8339470}</ProjectGuid>
-    <ProjectTypeGuids>{6BC8ED88-2882-458C-8E55-DFD12B67127B};{4925A630-B079-445D-BCD4-3A9C94FE9307}</ProjectTypeGuids>
+    <ProjectTypeGuids>{6BC8ED88-2882-458C-8E55-DFD12B67127B};{F2A71F9B-5D33-465A-A702-920D77279786}</ProjectTypeGuids>
     <OutputType>Exe</OutputType>
     <RootNamespace>fsReference</RootNamespace>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
-    <AssemblyName>fsReference</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhoneSimulator' ">
     <DebugSymbols>true</DebugSymbols>
@@ -24,6 +23,7 @@
     </PlatformTarget>
     <MtouchDebug>true</MtouchDebug>
     <MtouchLink>None</MtouchLink>
+    <AssemblyName>fsReference</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator' ">
     <DebugSymbols>true</DebugSymbols>
@@ -38,6 +38,7 @@
     <ConsolePause>false</ConsolePause>
     <Tailcalls>true</Tailcalls>
     <MtouchLink>None</MtouchLink>
+    <AssemblyName>fsReference</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhone' ">
     <DebugSymbols>true</DebugSymbols>
@@ -58,6 +59,7 @@
     <MtouchI18n>
     </MtouchI18n>
     <MtouchArch>ARMv7</MtouchArch>
+    <AssemblyName>fsReference</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
     <DebugSymbols>true</DebugSymbols>
@@ -72,6 +74,7 @@
     <ConsolePause>false</ConsolePause>
     <Tailcalls>true</Tailcalls>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
+    <AssemblyName>fsReference</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Ad-Hoc|iPhone' ">
     <DebugSymbols>true</DebugSymbols>
@@ -88,6 +91,7 @@
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
     <CodesignProvision>Automatic:AdHoc</CodesignProvision>
     <BuildIpa>true</BuildIpa>
+    <AssemblyName>fsReference</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AppStore|iPhone' ">
     <DebugSymbols>true</DebugSymbols>
@@ -103,6 +107,11 @@
     </PlatformTarget>
     <CodesignProvision>Automatic:AppStore</CodesignProvision>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
+    <AssemblyName>fsReference</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug</OutputPath>
+    <AssemblyName>FS_ViewController</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
