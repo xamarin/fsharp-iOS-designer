@@ -6,6 +6,13 @@ open MonoTouch.UIKit
 open MonoTouch.Foundation
 open MonoTouch.Design
 
+type StaticHelpers() =
+    static member InstantiateInitialViewController<'a when 'a :> NSObject>( storyboardName) =
+        let mainStoryboard = UIStoryboard.FromName (storyboardName, null)
+        let sb = mainStoryboard.InstantiateInitialViewController ()
+        let theType = sb.GetType()
+        sb :?> 'a
+    
 
 module TypeSystem =
     let typeMap =
