@@ -62,7 +62,10 @@ module TypeExt =
         member x.GetConstructor(typ) =
             x.GetConstructor([|typ|])
         member x.GetUnitConstructor() =
-            x.GetConstructor([||])         
+            x.GetConstructor([||])  
+        member x.GetVirtualMethods() = 
+            x.GetMethods (BindingFlags.Instance ||| BindingFlags.Public ||| BindingFlags.DeclaredOnly) 
+            |> Seq.filter (fun m -> m.IsVirtual)       
           
 type CustomAttributeDataExt =
     static member Make(ctorInfo, ?args, ?namedArgs) = 
@@ -105,6 +108,7 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
             let filename = parameterValues.[0] :?> string
             if Path.IsPathRooted filename then Uri(filename)
             else Uri(Path.Combine [|config.ResolutionFolder; filename |])
+        let registerViewController = parameterValues.[1] :?> bool
 
         let stream, watcherDisposer = IO.openWithWatcher designerFile this.Invalidate
         watchedFile := watcherDisposer
@@ -129,17 +133,21 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
 
         // Generate the required type
         let viewControllerType = ProvidedTypeDefinition(asm, ns, typeName, Some(typeof<UIViewController>), IsErased = false )
+        viewControllerType.SetAttributes (TypeAttributes.Public ||| TypeAttributes.Class)
+
+        //native ptr ctor
         let ctorInfo = typeof<UIViewController>.GetConstructor(typeof<IntPtr>)
         let ctor = ProvidedConstructor([ProvidedParameter("handle", typeof<IntPtr>)], InvokeCode=Expr.emptyInvoke, BaseConstructorCall = fun args -> ctorInfo, args)
         viewControllerType.AddMember(ctor)
 
+        //unit ctor
         let emptyctorInfo = typeof<UIViewController>.GetUnitConstructor()
         let emptyctor = ProvidedConstructor([], InvokeCode=Expr.emptyInvoke, BaseConstructorCall = fun args -> emptyctorInfo, args)
         viewControllerType.AddMember(emptyctor)
 
-                                                                             
-        let register = Attributes.MakeRegisterAttributeData viewController.customClass
-        viewControllerType.AddCustomAttribute(register)
+        if registerViewController then
+            let register = Attributes.MakeRegisterAttributeData viewController.customClass
+            viewControllerType.AddCustomAttribute(register)
 
         //actions mutable assignment style----------------------------
         //TODO add option for ObservableSource<NSObject>, potentially unneeded as outlets exposes this with observable...
@@ -244,6 +252,7 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
         //static helpers
         let staticHelper =
             let storyboardName = designerFile.AbsolutePath |> Path.GetFileNameWithoutExtension
+            //TODO make generic static method
             ProvidedMethod("CreateInitialViewController", [], viewControllerType,
                            IsStaticMethod = true,
                            InvokeCode = fun _ -> let viewController = 
@@ -259,7 +268,8 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
 
         viewControllerType
 
-    do  rootType.DefineStaticParameters([ProvidedStaticParameter ("DesignerFile", typeof<string>)], buildTypes) 
+    do  rootType.DefineStaticParameters([ProvidedStaticParameter ("DesignerFile", typeof<string>)
+                                         ProvidedStaticParameter ("Register", typeof<bool>)], buildTypes) 
         this.AddNamespace(ns, [rootType])
 
     interface IDisposable with
