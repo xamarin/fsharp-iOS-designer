@@ -77,9 +77,6 @@
     <Reference Include="MonoTouch.Design.Client">
       <HintPath>\Applications\Xamarin Studio.app\Contents\MacOS\lib\monodevelop\AddIns\MonoDevelop.IPhone\MonoTouch.Design.Client.dll</HintPath>
     </Reference>
-    <Reference Include="Unquote">
-      <HintPath>..\packages\Unquote.2.2.2\lib\net40\Unquote.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
@@ -91,11 +88,11 @@
     <Compile Include="IO.fs" />
     <Compile Include="Debug.fs" />
     <Compile Include="iOSDesignerProvider.fs" />
-    <Compile Include="Script.fs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="scratchpad.fsx" />
+    <None Include="Script.fsx" />
   </ItemGroup>
 </Project>

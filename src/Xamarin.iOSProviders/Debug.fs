@@ -14,7 +14,6 @@ open Microsoft.FSharp.Quotations
 open Microsoft.FSharp.Quotations.Patterns
 open Microsoft.FSharp.Reflection
 open ProviderImplementation.ProvidedTypes
-open Swensen.Unquote.Extensions
 
 module Debug = 
 
@@ -395,7 +394,7 @@ module Debug =
                 | expr -> print (expr.ToString())
 
             printExpr false false expr
-            sb.ToString() + "\n    ** Decompiled **\n" + String.Join("\n", expr.Decompile().Split(';')) + "\n    ________________"
+            sb.ToString()
 
         let sb = StringBuilder ()
 
@@ -407,10 +406,13 @@ module Debug =
             if not ignoreOutput then
                 sb.AppendLine() |> ignore
                 
-        let printCustomAttributes (cads:CustomAttributeData seq) = 
+        let printCustomAttributes (cads:CustomAttributeData seq) indent= 
             //print custom attributes
+            let prefix =
+                if indent then "\n    [<"
+                else "\n[<"
             for ca in cads do
-                print ("[<" + ca.Constructor.DeclaringType.Name + ">]")
+                print ( prefix + ca.Constructor.DeclaringType.Name.Replace("Attribute", "") + ">]\n")
               
         let printMember (memberInfo: MemberInfo) =        
 
@@ -460,7 +462,7 @@ module Debug =
             | :? ProvidedConstructor as cons -> 
                 if not ignoreOutput then
                     //print custom attributes
-                    printCustomAttributes <| cons.GetCustomAttributesData()
+                    printCustomAttributes (cons.GetCustomAttributesData()) false
                     
                     print <| "new : " + 
                              (toSignature <| cons.GetParameters()) + " -> " + 
@@ -480,7 +482,7 @@ module Debug =
             | :? ProvidedProperty as prop ->
                 if not ignoreOutput then
                     //print custom attributes
-                    printCustomAttributes <| prop.GetCustomAttributesData()
+                    printCustomAttributes (prop.GetCustomAttributesData()) true
                         
                     print <| (if prop.IsStatic then "static " else "") + "member " + 
                              prop.Name + ": " + (toString true prop.PropertyType) + 
@@ -495,7 +497,7 @@ module Debug =
                 if m.Attributes &&& MethodAttributes.SpecialName <> MethodAttributes.SpecialName then
                     if not ignoreOutput then
                         //print custom attributes
-                        printCustomAttributes <| m.GetCustomAttributesData()
+                        printCustomAttributes (m.GetCustomAttributesData()) true
                             
                         print <| (if m.IsStatic then "static " else "") + "member " + 
                         m.Name + ": " + (toSignature <| m.GetParameters()) + 
@@ -517,7 +519,7 @@ module Debug =
                 |> Seq.truncate maxWidth
             for t in pendingForThisDepth do
                 //print custom attributes
-                printCustomAttributes <| t.GetCustomAttributesData()
+                printCustomAttributes (t.GetCustomAttributesData()) false
                         
                 match t with
                 | t when FSharpType.IsRecord t-> "record "
