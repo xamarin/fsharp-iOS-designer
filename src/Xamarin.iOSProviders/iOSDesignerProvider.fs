@@ -154,6 +154,8 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
             let register = Attributes.MakeRegisterAttributeData viewController.customClass
             viewControllerType.AddCustomAttribute(register)
 
+        viewControllerType.AddMember <| ProvidedLiteralField("CustomClass", typeof<string>, viewController.customClass)
+
         //actions mutable assignment style----------------------------
         //TODO add option for ObservableSource<NSObject>, potentially unneeded as outlets exposes this with observable...
         for action in actions do
@@ -270,9 +272,9 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
         viewControllerType
 
     do  rootType.DefineStaticParameters([ProvidedStaticParameter ("DesignerFile", typeof<string>)
-                                         ProvidedStaticParameter ("IsRegistered", typeof<bool>)
-                                         ProvidedStaticParameter ("IsAbstract", typeof<bool>, false)
-                                         ProvidedStaticParameter ("AddUnitCtor", typeof<bool>, false)], buildTypes)
+                                         ProvidedStaticParameter ("IsRegistered", typeof<bool>, false)
+                                         ProvidedStaticParameter ("IsAbstract",   typeof<bool>, false)
+                                         ProvidedStaticParameter ("AddUnitCtor",  typeof<bool>, false)], buildTypes)
 
         this.AddNamespace(ns, [rootType])
         this.Disposing.Add (fun _ -> if !watchedFile <> null then (!watchedFile).Dispose())
