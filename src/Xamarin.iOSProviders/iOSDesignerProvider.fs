@@ -122,7 +122,7 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
         //let parsed = MonoTouch.Design.ClientParser.Instance.Parse(xdoc.Root)
 
         //TODO: support multiple view controllers
-        let viewControllerElement = xdoc.Descendants(Xml.xn "viewController").Single()
+        let viewControllerElement = xdoc.Descendants(Xml.xn "viewController").First()
 
         let actions = 
             viewControllerElement.Descendants(Xml.xn "action") 
@@ -134,12 +134,15 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
 
         let viewController = ViewController.Parse(viewControllerElement)
 
+        //generate storyboard container
+        let container = ProvidedTypeDefinition(asm, ns, typeName, Some(typeof<obj>), IsErased=false) 
+
         // Generate the required type
-        let viewControllerType = ProvidedTypeDefinition(asm, ns, typeName, Some(typeof<UIViewController>), IsErased = false )
+        let viewControllerType = ProvidedTypeDefinition(viewController.customClass + "Base", Some(typeof<UIViewController>), IsErased=false )
         viewControllerType.SetAttributes (if isAbstract then TypeAttributes.Public ||| TypeAttributes.Class ||| TypeAttributes.Abstract
                                           else TypeAttributes.Public ||| TypeAttributes.Class)
 
-        //native ptr ctor
+        //IntPtr ctor
         let ctorInfo = typeof<UIViewController>.GetConstructor(typeof<IntPtr>)
         let ctor = ProvidedConstructor([ProvidedParameter("handle", typeof<IntPtr>)], InvokeCode=Expr.emptyInvoke, BaseConstructorCall = fun args -> ctorInfo, args)
         viewControllerType.AddMember(ctor)
@@ -265,11 +268,14 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
 
         viewControllerType.AddMember staticHelper
 
+        //Add the vc to the container
+        container.AddMember(viewControllerType)
+
         //pump types into the correct assembly
         let assembly = ProvidedAssembly(Path.ChangeExtension(Path.GetTempFileName(), ".dll"))
-        assembly.AddTypes [viewControllerType]
+        assembly.AddTypes [container]
 
-        viewControllerType
+        container
 
     do  rootType.DefineStaticParameters([ProvidedStaticParameter ("DesignerFile", typeof<string>)
                                          ProvidedStaticParameter ("IsRegistered", typeof<bool>, false)

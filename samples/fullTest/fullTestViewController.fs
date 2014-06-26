@@ -6,16 +6,18 @@ open MonoTouch.Foundation
 open Xamarin.iOSProviders
 
 //view controller is generated from the type provider and embedded into the assembly here
-type MyViewControllerBase = UIProvider<"../StoryBoards/Main.storyboard">
+type VCContainer = UIProvider<"../StoryBoards/Main.storyboard">
 
-[<Register (MyViewControllerBase.CustomClass) >]
+[<Register (VCContainer.cstestViewControllerBase.CustomClass) >]
 type MyViewController(handle) =
-    inherit MyViewControllerBase(handle)
+    inherit VCContainer.cstestViewControllerBase(handle)
 
     //Overrides are implemented on the derived type   
     override x.ViewDidLoad() =
         //Access to the outlets are available
-        x.MyButton.TouchDown.Add (fun _ -> x.View.BackgroundColor <- UIColor.Purple) 
+        x.MyButton.TouchDown.Add (fun _ -> x.View.BackgroundColor <- UIColor.Purple)
+
+        //Access to actions are available 
         x.Mytouchup <- fun _ -> x.View.BackgroundColor <- UIColor.Yellow
 
     override x.ShouldAutorotateToInterfaceOrientation (orientation) = 
