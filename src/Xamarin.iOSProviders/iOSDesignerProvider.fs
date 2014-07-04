@@ -13,10 +13,7 @@ open Microsoft.FSharp.Quotations
 open MonoTouch.Foundation
 open MonoTouch.UIKit
 open Microsoft.FSharp.Compatibility.OCaml
-
-module Option =
-    let fromBoolAndOut (success,value) =
-        if success then Some(value) else None
+open iOSDesignerTypeProvider.ProvidedTypes
 
 module Sanitise =
     let cleanTrailing = String.trimEnd [|':'|]
@@ -28,66 +25,13 @@ module Sanitise =
         name |> String.capitalize |> String.trimEnd [|':'|]
 
     let makeMethodName (name:string) = 
-        (name |> String.capitalize |> String.trimEnd [|':'|])  + "Selector"
+        name |> String.capitalize |> String.trimEnd [|':'|] 
 
-module Expr =
-    /// This helper makes working with Expr.Let a little easier and safer
-    let LetVar(varName, expr:Expr, f) =  
-        let var = Var(varName, expr.Type)
-        Expr.Let(var, expr, f (Expr.Var var))
+    let makeSelectorMethodName (name:string) = 
+        (makeMethodName name) + "Selector"
 
-    //creates an empty expression in the form of a unit or ()
-    let emptyInvoke = fun _ -> <@@ () @@>
-
-module BindingFlags =
-    let publicInstance = BindingFlags.Public ||| BindingFlags.Instance
-
-type ProvidedTypes() =
-    static member ProvidedPropertyWithField(name, typ, ?parameters: ProvidedParameter list) =
-        
-        let field = ProvidedField( Sanitise.makePropertyName name, typ)
-        field.SetFieldAttributes FieldAttributes.Private
-
-        let property = ProvidedProperty(Sanitise.makePropertyName name, typ, defaultArg parameters [])
-        property.GetterCode <- fun args -> Expr.FieldGet(args.[0], field)
-        property.SetterCode <- fun args -> Expr.FieldSet(args.[0], field, args.[1])
-
-        field,property
-
-
-
-[<AutoOpenAttribute>]
-module TypeExt =
-    type Type with
-        member x.GetConstructor(typ) =
-            x.GetConstructor([|typ|])
-
-        member x.TryGetConstructor(typ:Type) =
-            x.GetConstructor(typ) |> function null -> None | v -> Some v
-
-        member x.GetUnitConstructor() =
-            x.GetConstructor([||])
-
-        member x.TryGetUnitConstructor() =
-            x.GetUnitConstructor() |> function null -> None | v -> Some v
-
-        member x.GetVirtualMethods() = 
-            x.GetMethods (BindingFlags.Instance ||| BindingFlags.Public ||| BindingFlags.DeclaredOnly) 
-            |> Seq.filter (fun m -> m.IsVirtual)       
-          
-type CustomAttributeDataExt =
-    static member Make(ctorInfo, ?args, ?namedArgs) = 
-        #if FX_NO_CUSTOMATTRIBUTEDATA
-        { new IProvidedCustomAttributeData with 
-        #else
-        { new CustomAttributeData() with 
-        #endif
-            member __.Constructor =  ctorInfo
-            member __.ConstructorArguments = defaultArg args [||] :> IList<_>
-            member __.NamedArguments = defaultArg namedArgs [||] :> IList<_> }
-         
 module Attributes =
-    let MakeActionAttributeData(argument:string) = 
+    let MakeActionAttributeData(argument:string) =
         CustomAttributeDataExt.Make(typeof<ActionAttribute>.GetConstructor(typeof<string>),
                                     [| CustomAttributeTypedArgument(typeof<ActionAttribute>, argument) |])
             
@@ -97,6 +41,7 @@ module Attributes =
 
     let MakeOutletAttributeData() = 
         CustomAttributeDataExt.Make(typeof<OutletAttribute>.GetUnitConstructor())
+
 
 module TypeBuilder =
     let buildTypes (designerFile:Uri) (viewControllerElement: XElement) isAbstract addUnitCtor register =
@@ -117,8 +62,8 @@ module TypeBuilder =
                 |> Map.tryFind viewController.sceneMemberID
                 |> function Some(t) -> t | _ -> failwith "No valid type found"
 
-            let viewControllerType = ProvidedTypeDefinition(viewController.customClass + "Base", Some controllerType, IsErased=false )
-            viewControllerType.SetAttributes (if isAbstract then TypeAttributes.Public ||| TypeAttributes.Class ||| TypeAttributes.Abstract
+            let providedController = ProvidedTypeDefinition(viewController.customClass + "Base", Some controllerType, IsErased=false )
+            providedController.SetAttributes (if isAbstract then TypeAttributes.Public ||| TypeAttributes.Class ||| TypeAttributes.Abstract
                                               else TypeAttributes.Public ||| TypeAttributes.Class)
 
             //Were relying on the fact all controller have the IntPtr and unit constructors, At least we propagate our own errors here.
@@ -128,29 +73,31 @@ module TypeBuilder =
             match controllerType.TryGetConstructor(typeof<IntPtr>) with
             | None -> failwithf "No IntPtr constructor found for type: %s" controllerType.Name
             | Some ctor -> let intPtrCtor = ProvidedConstructor([ProvidedParameter("handle", typeof<IntPtr>)], InvokeCode=Expr.emptyInvoke, BaseConstructorCall = fun args -> ctor, args)
-                           viewControllerType.AddMember(intPtrCtor)
+                           providedController.AddMember(intPtrCtor)
 
             //unit ctor
             if addUnitCtor then
                 match controllerType.TryGetUnitConstructor() with
                 | None -> failwithf "No empty constructor found for type: %s" controllerType.Name
                 | Some ctor -> let emptyctor = ProvidedConstructor([], InvokeCode=Expr.emptyInvoke, BaseConstructorCall = fun args -> ctor, args)
-                               viewControllerType.AddMember(emptyctor)
+                               providedController.AddMember(emptyctor)
 
             if register then
                 let register = Attributes.MakeRegisterAttributeData viewController.customClass
-                viewControllerType.AddCustomAttribute(register)
+                providedController.AddCustomAttribute(register)
 
-            viewControllerType.AddMember <| ProvidedLiteralField("CustomClass", typeof<string>, viewController.customClass)
+            providedController.AddMember <| ProvidedLiteralField("CustomClass", typeof<string>, viewController.customClass)
 
             //actions mutable assignment style----------------------------
             //TODO add option for ObservableSource<NSObject>, potentially unneeded as outlets exposes this with observable...
             for action in actions do
                 //create a backing field fand property or the action
-                let actionField, actionProperty = ProvidedTypes.ProvidedPropertyWithField( action.selector, typeof<Action<NSObject>>)
+                let actionField, actionProperty = ProvidedTypes.ProvidedPropertyWithField(Sanitise.makeFieldName action.selector,
+                                                                                          Sanitise.makeMethodName action.selector,
+                                                                                          typeof<Action<NSObject>>)
                 
                 let actionBinding =
-                    ProvidedMethod(methodName=Sanitise.makeMethodName action.selector, 
+                    ProvidedMethod(methodName=Sanitise.makeSelectorMethodName action.selector, 
                                    parameters=[ProvidedParameter("sender", typeof<NSObject>)], 
                                    returnType=typeof<Void>, 
                                    InvokeCode = fun args -> let instance = Expr.Cast<Action<NSObject>>(Expr.FieldGet(args.[0], actionField))
@@ -159,9 +106,9 @@ module TypeBuilder =
                 actionBinding.AddCustomAttribute(Attributes.MakeActionAttributeData(action.selector))
                 actionBinding.SetMethodAttrs MethodAttributes.Private
 
-                viewControllerType.AddMember actionField
-                viewControllerType.AddMember actionProperty
-                viewControllerType.AddMember actionBinding
+                providedController.AddMember actionField
+                providedController.AddMember actionProperty
+                providedController.AddMember actionBinding
             //end actions-----------------------------------------
 
             let makeReleaseOutletsExpr (instance: Expr) (outlets:(Expr -> Expr) array)=
@@ -175,7 +122,9 @@ module TypeBuilder =
             let providedOutlets = 
                 outlets
                 |> Array.map (fun outlet ->
-                    let outletField, outletProperty = ProvidedTypes.ProvidedPropertyWithField( outlet.Name, outlet.Type)
+                    let outletField, outletProperty = ProvidedTypes.ProvidedPropertyWithField(Sanitise.makeFieldName outlet.Name,
+                                                                                              Sanitise.makePropertyName outlet.Name,
+                                                                                              outlet.Type)
                     outletProperty.AddCustomAttribute <| Attributes.MakeOutletAttributeData()
 
                     ///takes an instance returns a disposal expresion
@@ -204,8 +153,8 @@ module TypeBuilder =
                     //Expr.IfThenElse(guard, trueblock, <@@ () @@>)
 
                     //Add the property and backing fields to the view controller
-                    viewControllerType.AddMember outletField
-                    viewControllerType.AddMember outletProperty
+                    providedController.AddMember outletField
+                    providedController.AddMember outletProperty
 
                     disposal)       
 
@@ -217,21 +166,22 @@ module TypeBuilder =
                                                             else makeReleaseOutletsExpr instance providedOutlets
                                             | _ -> invalidOp "Too many arguments")
                                                                                      
-            viewControllerType.AddMember releaseOutletsMethod
+            providedController.AddMember releaseOutletsMethod
             //outlets-----------------------------------------
 
             //static helpers
+            //TODO: Onlt the root controller should have this, maybe a Property on the root provided namespace should provide this?
             let staticHelper =
                 let storyboardName = designerFile.AbsolutePath |> Path.GetFileNameWithoutExtension
-                ProvidedMethod("CreateInitialViewController", [], viewControllerType,
+                ProvidedMethod("CreateInitialViewController", [], providedController,
                                IsStaticMethod = true,
                                InvokeCode = fun _ -> let viewController = 
                                                         <@@ let mainStoryboard = UIStoryboard.FromName (storyboardName, null)
                                                             mainStoryboard.InstantiateInitialViewController () @@>
-                                                     Expr.Coerce (viewController, viewControllerType) )
+                                                     Expr.Coerce (viewController, providedController) )
 
-            viewControllerType.AddMember staticHelper
-            viewControllerType
+            providedController.AddMember staticHelper
+            providedController
 
 [<TypeProvider>] 
 type iOSDesignerProvider(config: TypeProviderConfig) as this = 

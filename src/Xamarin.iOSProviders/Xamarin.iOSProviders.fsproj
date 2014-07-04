@@ -82,6 +82,7 @@
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="ProvidedTypes.fsi" />
     <Compile Include="ProvidedTypes.fs" />
+    <Compile Include="ProvidedTypesHelpers.fs" />
     <Compile Include="TypeSystem.fs" />
     <Compile Include="DesignTimeTypes.fs" />
     <Compile Include="Observable.fs" />
