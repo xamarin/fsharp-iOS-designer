@@ -93,6 +93,5 @@
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="Script.fsx" />
-    <None Include="ParserIntegration.fsx" />
   </ItemGroup>
 </Project>
