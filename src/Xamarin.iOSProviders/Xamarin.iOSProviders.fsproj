@@ -77,14 +77,13 @@
     <Reference Include="MonoTouch.Design.Client">
       <HintPath>\Applications\Xamarin Studio.app\Contents\MacOS\lib\monodevelop\AddIns\MonoDevelop.IPhone\MonoTouch.Design.Client.dll</HintPath>
     </Reference>
+    <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="ProvidedTypes.fsi" />
     <Compile Include="ProvidedTypes.fs" />
     <Compile Include="ProvidedTypesHelpers.fs" />
-    <Compile Include="TypeSystem.fs" />
-    <Compile Include="DesignTimeTypes.fs" />
     <Compile Include="Observable.fs" />
     <Compile Include="IO.fs" />
     <Compile Include="Debug.fs" />
@@ -94,5 +93,6 @@
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="Script.fsx" />
+    <None Include="ParserIntegration.fsx" />
   </ItemGroup>
 </Project>

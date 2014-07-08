@@ -14,6 +14,7 @@ open MonoTouch.Foundation
 open MonoTouch.UIKit
 open Microsoft.FSharp.Compatibility.OCaml
 open iOSDesignerTypeProvider.ProvidedTypes
+open MonoTouch.Design 
 
 module Sanitise =
     let cleanTrailing = String.trimEnd [|':'|]
@@ -44,25 +45,31 @@ module Attributes =
 
 
 module TypeBuilder =
-    let buildTypes (designerFile:Uri) (viewControllerElement: XElement) isAbstract addUnitCtor register =
-            let actions = 
-                viewControllerElement.Descendants(Xml.xn "action") 
-                |> Seq.map IosAction.Parse
 
-            let outlets =
-                viewControllerElement.Descendants(Xml.xn "outlet") 
-                |> Seq.map Outlet.Parse |> Seq.toArray
+    let typeMap (proxy:ProxiedUiKitObject) =
+        //TODO: Expand this to also search in user assemblies
+        let monotouchAssembly = typeof<UIButton>.Assembly
+        query { for typ in monotouchAssembly.ExportedTypes do
+                where (query {for ca in typ.CustomAttributes do
+                              exists (ca.AttributeType = typeof<RegisterAttribute> && 
+                                      match ca.ConstructorArguments |> Seq.map (fun ca -> ca.Value) |> Seq.toList with   
+                                      | [:? string as name; :? bool as isWrapper] -> name = proxy.ClassName
+                                      | _ -> false)})
+                select typ
+                exactlyOne }
 
-            let viewController = ViewController.Parse(viewControllerElement)
-                
-            // Generate the required type
-            let controllerType =
-                TypeSystem.typeMap 
-                |> Map.filter (fun k v -> k.EndsWith("Controller"))
-                |> Map.tryFind viewController.sceneMemberID
-                |> function Some(t) -> t | _ -> failwith "No valid type found"
+    let buildTypes (designerFile:Uri) (vc: ProxiedViewController) isAbstract addUnitCtor register (config:TypeProviderConfig) =
+            let actions =
+                match vc.View with
+                | null -> Seq.empty
+                | view ->
+                    match view.Subviews with
+                    | null -> Seq.empty
+                    | subviews -> subviews |> Seq.map (fun sv -> sv.Actions) |> Seq.concat
 
-            let providedController = ProvidedTypeDefinition(viewController.customClass + "Base", Some controllerType, IsErased=false )
+            let controllerType = typeMap vc
+
+            let providedController = ProvidedTypeDefinition(vc.CustomClass + "Base", Some controllerType, IsErased=false )
             providedController.SetAttributes (if isAbstract then TypeAttributes.Public ||| TypeAttributes.Class ||| TypeAttributes.Abstract
                                               else TypeAttributes.Public ||| TypeAttributes.Class)
 
@@ -83,27 +90,27 @@ module TypeBuilder =
                                providedController.AddMember(emptyctor)
 
             if register then
-                let register = Attributes.MakeRegisterAttributeData viewController.customClass
+                let register = Attributes.MakeRegisterAttributeData vc.CustomClass
                 providedController.AddCustomAttribute(register)
 
-            providedController.AddMember <| ProvidedLiteralField("CustomClass", typeof<string>, viewController.customClass)
+            providedController.AddMember <| ProvidedLiteralField("CustomClass", typeof<string>, vc.CustomClass)
 
             //actions mutable assignment style----------------------------
             //TODO add option for ObservableSource<NSObject>, potentially unneeded as outlets exposes this with observable...
             for action in actions do
                 //create a backing field fand property or the action
-                let actionField, actionProperty = ProvidedTypes.ProvidedPropertyWithField(Sanitise.makeFieldName action.selector,
-                                                                                          Sanitise.makeMethodName action.selector,
+                let actionField, actionProperty = ProvidedTypes.ProvidedPropertyWithField(Sanitise.makeFieldName action.Selector,
+                                                                                          Sanitise.makeMethodName action.Selector,
                                                                                           typeof<Action<NSObject>>)
                 
                 let actionBinding =
-                    ProvidedMethod(methodName=Sanitise.makeSelectorMethodName action.selector, 
+                    ProvidedMethod(methodName=Sanitise.makeSelectorMethodName action.Selector, 
                                    parameters=[ProvidedParameter("sender", typeof<NSObject>)], 
                                    returnType=typeof<Void>, 
                                    InvokeCode = fun args -> let instance = Expr.Cast<Action<NSObject>>(Expr.FieldGet(args.[0], actionField))
                                                             <@@ if %instance <> null then (%instance).Invoke(%%args.[1]) @@>)
 
-                actionBinding.AddCustomAttribute(Attributes.MakeActionAttributeData(action.selector))
+                actionBinding.AddCustomAttribute(Attributes.MakeActionAttributeData(action.Selector))
                 actionBinding.SetMethodAttrs MethodAttributes.Private
 
                 providedController.AddMember actionField
@@ -120,11 +127,13 @@ module TypeBuilder =
 
             //outlets-----------------------------------------
             let providedOutlets = 
-                outlets
+                vc.Outlets
                 |> Array.map (fun outlet ->
-                    let outletField, outletProperty = ProvidedTypes.ProvidedPropertyWithField(Sanitise.makeFieldName outlet.Name,
-                                                                                              Sanitise.makePropertyName outlet.Name,
-                                                                                              outlet.Type)
+                    //type lookup here
+                    let uiProxy = vc.Storyboard.FindById(outlet.Destination) :?> ProxiedUiKitObject
+                    let outletField, outletProperty = ProvidedTypes.ProvidedPropertyWithField(Sanitise.makeFieldName outlet.Property,
+                                                                                              Sanitise.makePropertyName outlet.Property,
+                                                                                              typeMap uiProxy)
                     outletProperty.AddCustomAttribute <| Attributes.MakeOutletAttributeData()
 
                     ///takes an instance returns a disposal expresion
@@ -215,12 +224,17 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
         //generate storyboard container
         let container = ProvidedTypeDefinition(asm, ns, typeName, Some(typeof<obj>), IsErased=false)
 
-        //TODO try to use MonoTouch.Design parsing, extract the models action/outlets etc
-        //let parsed = MonoTouch.Design.ClientParser.Instance.Parse(xdoc.Root)
-        let viewControllerElements = xdoc.Descendants(Xml.xn "viewController")
+        let scenes = 
+            match Parser.Instance.Parse(xdoc.Root) with
+            | :? Storyboard as sb ->
+                sb.Scenes
+            //TODO: Support Xibs!
+            | :? Xib as xib -> failwith "Xib files are currently not supported"
+            | _ -> failwith "Could not parse file, no storyboard or xib types were found"
+
         let types = 
-            viewControllerElements 
-            |> Seq.map (fun vc -> TypeBuilder.buildTypes designerFile vc isAbstract addUnitCtor register)
+            scenes 
+            |> Seq.map (fun controller -> TypeBuilder.buildTypes designerFile controller.ViewController isAbstract addUnitCtor register config)
         
         //Add the types to the container
         for pt in types do
