@@ -10,10 +10,10 @@ open ProviderImplementation
 open ProviderImplementation.ProvidedTypes
 open Xamarin.iOSProviders
 
-let (++) a b = Path.Combine(a, b)
-let outputFolder = __SOURCE_DIRECTORY__  ++ "bin" ++ "Debug"
+let (/) a b = Path.Combine(a, b)
+let outputFolder = __SOURCE_DIRECTORY__ / "bin" / "Debug"
 let assemblyName = "iOSDesignerTypeProvider.exe"
-let runtimeAssembly = outputFolder ++ assemblyName
+let runtimeAssembly = outputFolder / assemblyName
 
 printfn "%s\n%s" outputFolder runtimeAssembly
 let testXib = "/Users/dave/Projects/IOSTypeProviderTests/cstest/MainStoryboard.storyboard"
