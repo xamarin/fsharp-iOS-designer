@@ -43,7 +43,6 @@ module Attributes =
     let MakeOutletAttributeData() = 
         CustomAttributeDataExt.Make(typeof<OutletAttribute>.GetUnitConstructor())
 
-
 module TypeBuilder =
 
     let typeMap (proxy:ProxiedUiKitObject) =
@@ -58,139 +57,111 @@ module TypeBuilder =
                 select typ
                 exactlyOne }
 
-    let buildTypes (designerFile:Uri) (vc: ProxiedViewController) isAbstract addUnitCtor register (config:TypeProviderConfig) =
-            let actions =
-                match vc.View with
-                | null -> Seq.empty
-                | view ->
-                    match view.Subviews with
-                    | null -> Seq.empty
-                    | subviews -> subviews |> Seq.map (fun sv -> sv.Actions) |> Seq.concat
+    //TODO add option for ObservableSource<NSObject>, potentially unneeded as outlets exposes this with observable...
+    let buildAction (action:ActionConnection) =
+        //create a backing field fand property or the action
+        let actionField, actionProperty = ProvidedTypes.ProvidedPropertyWithField(Sanitise.makeFieldName action.Selector,
+                                                                                  Sanitise.makeMethodName action.Selector,
+                                                                                  typeof<Action<NSObject>>)
+        
+        let actionBinding =
+            ProvidedMethod(methodName=Sanitise.makeSelectorMethodName action.Selector, 
+                           parameters=[ProvidedParameter("sender", typeof<NSObject>)], 
+                           returnType=typeof<Void>, 
+                           InvokeCode = fun args -> let instance = Expr.Cast<Action<NSObject>>(Expr.FieldGet(args.[0], actionField))
+                                                    <@@ if %instance <> null then (%instance).Invoke(%%args.[1]) @@>)
 
-            let controllerType = typeMap vc
+        actionBinding.AddCustomAttribute(Attributes.MakeActionAttributeData(action.Selector))
+        actionBinding.SetMethodAttrs MethodAttributes.Private
 
-            let providedController = ProvidedTypeDefinition(vc.CustomClass + "Base", Some controllerType, IsErased=false )
-            providedController.SetAttributes (if isAbstract then TypeAttributes.Public ||| TypeAttributes.Class ||| TypeAttributes.Abstract
-                                              else TypeAttributes.Public ||| TypeAttributes.Class)
+        [actionField :> MemberInfo; actionProperty :> _; actionBinding :> _]
 
-            //Were relying on the fact all controller have the IntPtr and unit constructors, At least we propagate our own errors here.
-            //Type lookups based on Controler type may be needed to find and add the correct ConstructorInfo
+    let buildOutlet (vc:ProxiedViewController) (outlet:Outlet) =
+            let uiProxy = vc.Storyboard.FindById(outlet.Destination) :?> ProxiedUiKitObject
+            let outletField, outletProperty = ProvidedTypes.ProvidedPropertyWithField(Sanitise.makeFieldName outlet.Property,
+                                                                                      Sanitise.makePropertyName outlet.Property,
+                                                                                      typeMap uiProxy)
+            outletProperty.AddCustomAttribute <| Attributes.MakeOutletAttributeData()
 
-            //IntPtr ctor
-            match controllerType.TryGetConstructor(typeof<IntPtr>) with
-            | None -> failwithf "No IntPtr constructor found for type: %s" controllerType.Name
-            | Some ctor -> let intPtrCtor = ProvidedConstructor([ProvidedParameter("handle", typeof<IntPtr>)], InvokeCode=Expr.emptyInvoke, BaseConstructorCall = fun args -> ctor, args)
-                           providedController.AddMember(intPtrCtor)
+            //Add the property and backing fields to the view controller
+            outletField, outletProperty
+    
+    //takes an instance returns a disposal expresion
+    let disposal instance outletField =
+        let get = Expr.FieldGet(instance, outletField)
+        let field = Expr.Coerce(get, typeof<obj>)
+        <@@ if %%field <>  null then
+               ((%%field:obj) :?> IDisposable).Dispose() @@>
 
-            //unit ctor
-            if addUnitCtor then
-                match controllerType.TryGetUnitConstructor() with
-                | None -> failwithf "No empty constructor found for type: %s" controllerType.Name
-                | Some ctor -> let emptyctor = ProvidedConstructor([], InvokeCode=Expr.emptyInvoke, BaseConstructorCall = fun args -> ctor, args)
-                               providedController.AddMember(emptyctor)
+    let makeReleaseOutletsExpr (instance: Expr) (outlets: _ array)=
+        match outlets with
+        | [|single|] -> disposal instance single
+        | lots -> lots 
+                  |> Array.map (fun o -> disposal instance o) 
+                  |> Array.reduce (fun one two -> Expr.Sequential(one, two))
 
-            if register then
-                let register = Attributes.MakeRegisterAttributeData vc.CustomClass
-                providedController.AddCustomAttribute(register)
+    let createReleaseOutletsMethod fields =
+        ProvidedMethod("ReleaseDesignerOutlets", [], typeof<Void>, 
+                       InvokeCode = function
+                                    | [instance] -> if Array.isEmpty fields then Expr.emptyInvoke ()
+                                                    else makeReleaseOutletsExpr instance fields
+                                    | _ -> invalidOp "Too many arguments")
 
-            providedController.AddMember <| ProvidedLiteralField("CustomClass", typeof<string>, vc.CustomClass)
+    let buildController (designerFile:Uri) (vc: ProxiedViewController) isAbstract addUnitCtor register (config:TypeProviderConfig) =
 
-            //actions mutable assignment style----------------------------
-            //TODO add option for ObservableSource<NSObject>, potentially unneeded as outlets exposes this with observable...
-            for action in actions do
-                //create a backing field fand property or the action
-                let actionField, actionProperty = ProvidedTypes.ProvidedPropertyWithField(Sanitise.makeFieldName action.Selector,
-                                                                                          Sanitise.makeMethodName action.Selector,
-                                                                                          typeof<Action<NSObject>>)
-                
-                let actionBinding =
-                    ProvidedMethod(methodName=Sanitise.makeSelectorMethodName action.Selector, 
-                                   parameters=[ProvidedParameter("sender", typeof<NSObject>)], 
-                                   returnType=typeof<Void>, 
-                                   InvokeCode = fun args -> let instance = Expr.Cast<Action<NSObject>>(Expr.FieldGet(args.[0], actionField))
-                                                            <@@ if %instance <> null then (%instance).Invoke(%%args.[1]) @@>)
+        //get the real type of the controller proxy
+        let controllerType = typeMap vc
 
-                actionBinding.AddCustomAttribute(Attributes.MakeActionAttributeData(action.Selector))
-                actionBinding.SetMethodAttrs MethodAttributes.Private
+        let providedController = ProvidedTypeDefinition(vc.CustomClass + "Base", Some controllerType, IsErased=false )
+        providedController.SetAttributes (if isAbstract then TypeAttributes.Public ||| TypeAttributes.Class ||| TypeAttributes.Abstract
+                                          else TypeAttributes.Public ||| TypeAttributes.Class)
 
-                providedController.AddMember actionField
-                providedController.AddMember actionProperty
-                providedController.AddMember actionBinding
-            //end actions-----------------------------------------
+        //Were relying on the fact all controller have the IntPtr and unit constructors, At least we propagate our own errors here.
+        //Type lookups based on Controler type may be needed to find and add the correct ConstructorInfo
 
-            let makeReleaseOutletsExpr (instance: Expr) (outlets:(Expr -> Expr) array)=
-                match outlets with
-                | [|single|] -> single instance
-                | lots -> lots 
-                          |> Array.map (fun o -> o instance) 
-                          |> Array.reduce (fun one two -> Expr.Sequential(one, two))
+        //IntPtr ctor
+        match controllerType.TryGetConstructor(typeof<IntPtr>) with
+        | None -> failwithf "No IntPtr constructor found for type: %s" controllerType.Name
+        | Some ctor -> let intPtrCtor = ProvidedConstructor([ProvidedParameter("handle", typeof<IntPtr>)], InvokeCode=Expr.emptyInvoke, BaseConstructorCall = fun args -> ctor, args)
+                       providedController.AddMember(intPtrCtor)
 
-            //outlets-----------------------------------------
-            let providedOutlets = 
-                vc.Outlets
-                |> Array.map (fun outlet ->
-                    //type lookup here
-                    let uiProxy = vc.Storyboard.FindById(outlet.Destination) :?> ProxiedUiKitObject
-                    let outletField, outletProperty = ProvidedTypes.ProvidedPropertyWithField(Sanitise.makeFieldName outlet.Property,
-                                                                                              Sanitise.makePropertyName outlet.Property,
-                                                                                              typeMap uiProxy)
-                    outletProperty.AddCustomAttribute <| Attributes.MakeOutletAttributeData()
+        //if set adds a () constructor
+        if addUnitCtor then
+            match controllerType.TryGetUnitConstructor() with
+            | None -> failwithf "No empty constructor found for type: %s" controllerType.Name
+            | Some ctor -> let emptyctor = ProvidedConstructor([], InvokeCode=Expr.emptyInvoke, BaseConstructorCall = fun args -> ctor, args)
+                           providedController.AddMember(emptyctor)
 
-                    ///takes an instance returns a disposal expresion
-                    let disposal(instance) =
-                        let get = Expr.FieldGet(instance, outletField)
-                        let field = Expr.Coerce(get, typeof<obj>)
-                        <@@ if %%field <>  null then
-                               ((%%field:obj) :?> IDisposable).Dispose() @@>
+        //If set automatically registers using the RegisterAttribute
+        if register then
+            let register = Attributes.MakeRegisterAttributeData vc.CustomClass
+            providedController.AddCustomAttribute(register)
 
-                    //This is Expr equivelent of the above
-                    //let operators = Type.GetType("Microsoft.FSharp.Core.Operators, FSharp.Core")
-                    //let intrinsicFunctions = Type.GetType("Microsoft.FSharp.Core.LanguagePrimitives+IntrinsicFunctions, FSharp.Core")
-                    //let inequality = operators.GetMethod("op_Inequality")
-                    //let genineqtyped = ProvidedTypeBuilder.MakeGenericMethod(inequality, [typeof<obj>;typeof<obj>])
-                    //
-                    //let unboxGenericMethod = intrinsicFunctions.GetMethod("UnboxGeneric")
-                    //let unboxGenericMethodTyped = ProvidedTypeBuilder.MakeGenericMethod(unboxGenericMethod, [typeof<IDisposable>])
-                    //
-                    //let disposeMethod = typeof<IDisposable>.GetMethod("Dispose")
-                    //
-                    //
-                    //let coerceToObj = Expr.Coerce(get, typeof<obj>)
-                    //let guard = Expr.Call(genineqtyped, [coerceToObj; Expr.Value(null) ])
-                    //let trueblock = Expr.Call(Expr.Call(unboxGenericMethodTyped, [Expr.Coerce(get, typeof<obj>)]), disposeMethod, [])
-                    //
-                    //Expr.IfThenElse(guard, trueblock, <@@ () @@>)
+        //Add a little helper that has the "CustomClass: available, this can be used to register without knowing the CustomClass
+        providedController.AddMember <| ProvidedLiteralField("CustomClass", typeof<string>, vc.CustomClass)
 
-                    //Add the property and backing fields to the view controller
-                    providedController.AddMember outletField
-                    providedController.AddMember outletProperty
+        //actions
+        match vc.View with
+        | null -> Seq.empty
+        | view ->
+            match view.Subviews with
+            | null -> Seq.empty
+            | subviews -> subviews 
+                          |> Seq.map (fun sv -> sv.Actions)
+                          |> Seq.concat
+        |> Seq.map buildAction 
+        |> Seq.iter providedController.AddMembers
+      
+        //outlets
+        let providedOutlets = vc.Outlets |> Array.map (buildOutlet vc)
+        for (field, property) in providedOutlets do
+            providedController.AddMembers [field:>MemberInfo;property:>_]
+        let releaseOutletsMethod = createReleaseOutletsMethod (providedOutlets |> Array.map fst)
 
-                    disposal)       
-
-
-            let releaseOutletsMethod =
-                ProvidedMethod("ReleaseDesignerOutlets", [], typeof<Void>, 
-                               InvokeCode = function
-                                            | [instance] -> if Array.isEmpty providedOutlets then Expr.emptyInvoke ()
-                                                            else makeReleaseOutletsExpr instance providedOutlets
-                                            | _ -> invalidOp "Too many arguments")
-                                                                                     
-            providedController.AddMember releaseOutletsMethod
-            //outlets-----------------------------------------
-
-            //static helpers
-            //TODO: Onlt the root controller should have this, maybe a Property on the root provided namespace should provide this?
-            let staticHelper =
-                let storyboardName = designerFile.AbsolutePath |> Path.GetFileNameWithoutExtension
-                ProvidedMethod("CreateInitialViewController", [], providedController,
-                               IsStaticMethod = true,
-                               InvokeCode = fun _ -> let viewController = 
-                                                        <@@ let mainStoryboard = UIStoryboard.FromName (storyboardName, null)
-                                                            mainStoryboard.InstantiateInitialViewController () @@>
-                                                     Expr.Coerce (viewController, providedController) )
-
-            providedController.AddMember staticHelper
-            providedController
+        //add outlet release                                                                       
+        providedController.AddMember releaseOutletsMethod
+         
+        providedController
 
 [<TypeProvider>] 
 type iOSDesignerProvider(config: TypeProviderConfig) as this = 
@@ -232,13 +203,28 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
             | :? Xib as xib -> failwith "Xib files are currently not supported"
             | _ -> failwith "Could not parse file, no storyboard or xib types were found"
 
-        let types = 
+        let generated = 
             scenes 
-            |> Seq.map (fun controller -> TypeBuilder.buildTypes designerFile controller.ViewController isAbstract addUnitCtor register config)
+            |> Seq.map (fun scene -> scene.ViewController) 
+            |> Seq.filter (fun vc -> not (String.IsNullOrWhiteSpace vc.CustomClass) )
+            |> Seq.map (fun vc -> vc, TypeBuilder.buildController designerFile vc isAbstract addUnitCtor register config)
         
+        // add InitialViewController to container as property, only the root controller should have this
+        let createInitialController providedController = 
+            let storyboardName = designerFile.AbsolutePath |> Path.GetFileNameWithoutExtension
+            ProvidedMethod("CreateInitialViewController", [], providedController,
+                           IsStaticMethod = true,
+                           InvokeCode = fun _ -> let viewController = 
+                                                    <@@ let mainStoryboard = UIStoryboard.FromName (storyboardName, null)
+                                                        mainStoryboard.InstantiateInitialViewController () @@>
+                                                 Expr.Coerce (viewController, providedController) )
+
         //Add the types to the container
-        for pt in types do
+        for (vc, pt) in generated do
             container.AddMember pt
+            if vc.IsInitialViewController then
+                let ivcMethod =createInitialController pt
+                container.AddMember ivcMethod
 
         //pump types into the correct assembly
         let assembly = ProvidedAssembly(Path.ChangeExtension(Path.GetTempFileName(), ".dll"))
