@@ -17,14 +17,11 @@ module Sanitise =
         "__" +
         (name |> String.uncapitalize |> String.trimEnd [|':'|])
     
-    let makePropertyName (name:string) = 
+    let makePascalCase (name:string) = 
         name |> String.capitalize |> String.trimEnd [|':'|]
 
-    let makeMethodName (name:string) = 
-        name |> String.capitalize |> String.trimEnd [|':'|] 
-
     let makeSelectorMethodName (name:string) = 
-        (makeMethodName name) + "Selector"
+        (makePascalCase name) + "Selector"
 
 module Attributes =
     let MakeActionAttributeData(argument:string) =
@@ -56,7 +53,7 @@ module TypeBuilder =
     let buildAction (action:ActionConnection) =
         //create a backing field fand property or the action
         let actionField, actionProperty = ProvidedTypes.ProvidedPropertyWithField(Sanitise.makeFieldName action.Selector,
-                                                                                  Sanitise.makeMethodName action.Selector,
+                                                                                  Sanitise.makePascalCase action.Selector,
                                                                                   typeof<Action<NSObject>>)
         
         let actionBinding =
@@ -74,7 +71,7 @@ module TypeBuilder =
     let buildOutlet (vc:ProxiedViewController) (outlet:Outlet) =
             let uiProxy = vc.Storyboard.FindById(outlet.Destination) :?> ProxiedUiKitObject
             let outletField, outletProperty = ProvidedTypes.ProvidedPropertyWithField(Sanitise.makeFieldName outlet.Property,
-                                                                                      Sanitise.makePropertyName outlet.Property,
+                                                                                      Sanitise.makePascalCase outlet.Property,
                                                                                       typeMap uiProxy)
             outletProperty.AddCustomAttribute <| Attributes.MakeOutletAttributeData()
 
@@ -132,7 +129,7 @@ module TypeBuilder =
             let register = Attributes.MakeRegisterAttributeData vc.CustomClass
             providedController.AddCustomAttribute(register)
 
-        //Add a little helper that has the "CustomClass: available, this can be used to register without knowing the CustomClass
+        //Add a little helper that has the "CustomClass" available, this can be used to register without knowing the CustomClass
         providedController.AddMember <| ProvidedLiteralField("CustomClass", typeof<string>, vc.CustomClass)
 
         //actions
