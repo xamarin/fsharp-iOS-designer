@@ -50,9 +50,6 @@
     <Reference Include="monotouch">
       <HintPath>\Developer\MonoTouch\usr\lib\mono\2.1\monotouch.dll</HintPath>
     </Reference>
-    <Reference Include="ExtCore">
-      <HintPath>..\packages\ExtCore.0.8.41\lib\net40\ExtCore.dll</HintPath>
-    </Reference>
     <Reference Include="FSharp.PowerPack">
       <HintPath>..\packages\FSPowerPack.Community.2.1.3.1\Lib\Net40\FSharp.PowerPack.dll</HintPath>
     </Reference>
@@ -78,6 +75,9 @@
       <HintPath>\Applications\Xamarin Studio.app\Contents\MacOS\lib\monodevelop\AddIns\MonoDevelop.IPhone\MonoTouch.Design.Client.dll</HintPath>
     </Reference>
     <Reference Include="System.Drawing" />
+    <Reference Include="ExtCore">
+      <HintPath>..\packages\ExtCore.0.8.42\lib\net40\ExtCore.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
