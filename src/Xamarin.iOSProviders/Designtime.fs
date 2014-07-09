@@ -52,9 +52,10 @@ module TypeBuilder =
     //TODO add option for ObservableSource<NSObject>, potentially unneeded as outlets exposes this with observable...
     let buildAction (action:ActionConnection) =
         //create a backing field fand property or the action
-        let actionField, actionProperty = ProvidedTypes.ProvidedPropertyWithField(Sanitise.makeFieldName action.Selector,
-                                                                                  Sanitise.makePascalCase action.Selector,
-                                                                                  typeof<Action<NSObject>>)
+        let actionField, actionProperty =
+            ProvidedTypes.ProvidedPropertyWithField(Sanitise.makeFieldName action.Selector,
+                                                    Sanitise.makePascalCase action.Selector,
+                                                    typeof<Action<NSObject>>)
         
         let actionBinding =
             ProvidedMethod(methodName=Sanitise.makeSelectorMethodName action.Selector, 
@@ -70,16 +71,17 @@ module TypeBuilder =
 
     let buildOutlet (vc:ProxiedViewController) (outlet:Outlet) =
             let uiProxy = vc.Storyboard.FindById(outlet.Destination) :?> ProxiedUiKitObject
-            let outletField, outletProperty = ProvidedTypes.ProvidedPropertyWithField(Sanitise.makeFieldName outlet.Property,
-                                                                                      Sanitise.makePascalCase outlet.Property,
-                                                                                      typeMap uiProxy)
+            let outletField, outletProperty =
+                ProvidedTypes.ProvidedPropertyWithField(Sanitise.makeFieldName outlet.Property,
+                                                        Sanitise.makePascalCase outlet.Property,
+                                                        typeMap uiProxy)
             outletProperty.AddCustomAttribute <| Attributes.MakeOutletAttributeData()
 
             //Add the property and backing fields to the view controller
             outletField, outletProperty
     
     //takes an instance returns a disposal expresion
-    let disposal instance outletField =
+    let makeDisposalExpr instance outletField =
         let get = Expr.FieldGet(instance, outletField)
         let field = Expr.Coerce(get, typeof<obj>)
         <@@ if %%field <>  null then
@@ -87,9 +89,9 @@ module TypeBuilder =
 
     let makeReleaseOutletsExpr (instance: Expr) (outlets: _ array)=
         match outlets with
-        | [|single|] -> disposal instance single
+        | [|single|] -> makeDisposalExpr instance single
         | lots -> lots 
-                  |> Array.map (fun o -> disposal instance o) 
+                  |> Array.map (fun o -> makeDisposalExpr instance o) 
                   |> Array.reduce (fun one two -> Expr.Sequential(one, two))
 
     let createReleaseOutletsMethod fields =
@@ -104,7 +106,7 @@ module TypeBuilder =
         //get the real type of the controller proxy
         let controllerType = typeMap vc
 
-        let providedController = ProvidedTypeDefinition(vc.CustomClass + "Base", Some controllerType, IsErased=false )
+        let providedController = ProvidedTypeDefinition( (if isAbstract then vc.CustomClass + "Base" else vc.CustomClass), Some controllerType, IsErased=false )
         providedController.SetAttributes (if isAbstract then TypeAttributes.Public ||| TypeAttributes.Class ||| TypeAttributes.Abstract
                                           else TypeAttributes.Public ||| TypeAttributes.Class)
 
@@ -124,8 +126,8 @@ module TypeBuilder =
             | Some ctor -> let emptyctor = ProvidedConstructor([], InvokeCode=Expr.emptyInvoke, BaseConstructorCall = fun args -> ctor, args)
                            providedController.AddMember(emptyctor)
 
-        //If set automatically registers using the RegisterAttribute
-        if register then
+        //If register set and nor isAbstract, then automatically registers using [<Register>]
+        if register && not isAbstract then
             let register = Attributes.MakeRegisterAttributeData vc.CustomClass
             providedController.AddCustomAttribute(register)
 
