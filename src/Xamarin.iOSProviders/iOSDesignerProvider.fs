@@ -58,7 +58,7 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
         for (vc, pt) in generated do
             container.AddMember pt
             if vc.IsInitialViewController then
-                container.AddMember (TypeBuilder.createInitialController pt designerFile)
+                container.AddMember (TypeBuilder.buildInitialController pt designerFile)
 
         //pump types into the correct assembly
         let assembly = ProvidedAssembly(Path.ChangeExtension(Path.GetTempFileName(), ".dll"))

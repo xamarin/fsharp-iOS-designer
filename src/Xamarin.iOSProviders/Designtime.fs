@@ -81,24 +81,24 @@ module TypeBuilder =
             outletField, outletProperty
     
     //takes an instance returns a disposal expresion
-    let makeDisposalExpr instance outletField =
+    let buildDisposalExpr instance outletField =
         let get = Expr.FieldGet(instance, outletField)
         let field = Expr.Coerce(get, typeof<obj>)
         <@@ if %%field <>  null then
                ((%%field:obj) :?> IDisposable).Dispose() @@>
 
-    let makeReleaseOutletsExpr (instance: Expr) (outlets: _ array)=
+    let buildReleaseOutletsExpr (instance: Expr) (outlets: _ array)=
         match outlets with
-        | [|single|] -> makeDisposalExpr instance single
+        | [|single|] -> buildDisposalExpr instance single
         | lots -> lots 
-                  |> Array.map (fun o -> makeDisposalExpr instance o) 
+                  |> Array.map (fun o -> buildDisposalExpr instance o) 
                   |> Array.reduce (fun one two -> Expr.Sequential(one, two))
 
-    let createReleaseOutletsMethod fields =
+    let buildReleaseOutletsMethod fields =
         ProvidedMethod("ReleaseDesignerOutlets", [], typeof<Void>, 
                        InvokeCode = function
                                     | [instance] -> if Array.isEmpty fields then Expr.emptyInvoke ()
-                                                    else makeReleaseOutletsExpr instance fields
+                                                    else buildReleaseOutletsExpr instance fields
                                     | _ -> invalidOp "Too many arguments")
 
     let buildController (designerFile:Uri) (vc: ProxiedViewController) isAbstract addUnitCtor register (config:TypeProviderConfig) =
@@ -150,7 +150,7 @@ module TypeBuilder =
         let providedOutlets = vc.Outlets |> Array.map (buildOutlet vc)
         for (field, property) in providedOutlets do
             providedController.AddMembers [field:>MemberInfo;property:>_]
-        let releaseOutletsMethod = createReleaseOutletsMethod (providedOutlets |> Array.map fst)
+        let releaseOutletsMethod = buildReleaseOutletsMethod (providedOutlets |> Array.map fst)
 
         //add outlet release                                                                       
         providedController.AddMember releaseOutletsMethod
@@ -158,7 +158,7 @@ module TypeBuilder =
         providedController
 
     // add InitialViewController to container as property, only the root controller should have this
-    let createInitialController providedController (designerFile:Uri) = 
+    let buildInitialController providedController (designerFile:Uri) = 
         let storyboardName = designerFile.AbsolutePath |> Path.GetFileNameWithoutExtension
         ProvidedMethod("CreateInitialViewController", [], providedController,
                        IsStaticMethod = true,
