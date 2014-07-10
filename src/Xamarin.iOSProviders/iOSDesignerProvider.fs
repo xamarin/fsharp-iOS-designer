@@ -67,7 +67,7 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
 
     do  rootType.DefineStaticParameters([ProvidedStaticParameter ("DesignerFile", typeof<string>)
                                          ProvidedStaticParameter ("IsRegistered", typeof<bool>, false)
-                                         ProvidedStaticParameter ("IsAbstract",   typeof<bool>, false)
+                                         ProvidedStaticParameter ("IsAbstract",   typeof<bool>, true)
                                          ProvidedStaticParameter ("AddUnitCtor",  typeof<bool>, false)], buildTypes)
         
         this.AddNamespace(ns, [rootType])
