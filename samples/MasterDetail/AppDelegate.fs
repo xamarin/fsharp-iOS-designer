@@ -14,18 +14,18 @@ type DataSource(controller:UITableViewController) =
     inherit UITableViewSource()
         
     let CellIdentifier = new NSString ("Cell")
-    member val Objects = List<obj>() with get,set
+    member val Items = List<obj>() with get,set
 
     // Customize the number of sections in the table view.
     override x.NumberOfSections (tableView) = 1
 
     override x.RowsInSection (tableview, section) =
-        x.Objects.Count
+        x.Items.Count
 
     // Customize the appearance of table view cells.
     override x.GetCell (tableView, indexPath) =         
         let cell = tableView.DequeueReusableCell (CellIdentifier, indexPath)
-        cell.TextLabel.Text <- x.Objects.[indexPath.Row].ToString ()
+        cell.TextLabel.Text <- x.Items.[indexPath.Row].ToString ()
         cell
 
     override x.CanEditRow (tableView, indexPath) =
@@ -36,7 +36,7 @@ type DataSource(controller:UITableViewController) =
         match editingStyle with
         | UITableViewCellEditingStyle.Delete ->
             // Delete the row from the data source.
-            x.Objects.RemoveAt (indexPath.Row)
+            x.Items.RemoveAt (indexPath.Row)
             controller.TableView.DeleteRows ([|indexPath|], UITableViewRowAnimation.Fade)
         | UITableViewCellEditingStyle.Insert -> ()
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
@@ -57,7 +57,7 @@ type MasterDetailController(iptr) as this =
 
     let addNewItem =
         (fun sender args ->
-            dataSource.Objects.Insert (0, DateTime.Now)
+            dataSource.Items.Insert (0, DateTime.Now)
             use indexPath = NSIndexPath.FromRowSection (0, 0)
             this.TableView.InsertRows ([|indexPath|], UITableViewRowAnimation.Automatic))
 
@@ -75,7 +75,7 @@ type MasterDetailController(iptr) as this =
     override this.PrepareForSegue(segue, sender) = 
         if segue.Identifier = "showDetail" then
             let indexPath = this.TableView.IndexPathForSelectedRow
-            let item = dataSource.Objects.[indexPath.Row]
+            let item = dataSource.Items.[indexPath.Row]
             dataSource <- new DataSource(this)
             this.TableView.Source <- dataSource
 
@@ -110,8 +110,8 @@ type DetailViewController(handle) =
 type AppDelegate() = 
     inherit UIApplicationDelegate()
     
-    override val Window = new UIWindow(UIScreen.MainScreen.Bounds) with get,set
-    
+    override val Window = null with get,set
+
     // This method should be used to release shared resources and it should store the application state.
     // If your application supports background exection this method is called instead of WillTerminate
     // when the user quits.
