@@ -12,14 +12,9 @@ module ProvidedTypes =
 
     type CustomAttributeDataExt =
         static member Make(ctorInfo, ?args, ?namedArgs) = 
-            #if FX_NO_CUSTOMATTRIBUTEDATA
-            { new IProvidedCustomAttributeData with 
-            #else
             { new CustomAttributeData() with 
-            #endif
                 member __.Constructor =  ctorInfo
                 member __.ConstructorArguments = defaultArg args [||] :> IList<_>
-    
                 member __.NamedArguments = defaultArg namedArgs [||] :> IList<_> }
 
     type Type with
