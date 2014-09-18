@@ -5,11 +5,19 @@ open System.IO
 open System.Reflection
 open ProviderImplementation.ProvidedTypes
 open Microsoft.FSharp.Core.CompilerServices
-open Microsoft.FSharp.Quotations      
+open Microsoft.FSharp.Quotations
+ 
+#if Classic   
 open MonoTouch.Foundation
 open MonoTouch.UIKit
-open iOSDesignerTypeProvider.ProvidedTypes
+#else
+open Foundation
+open UIKit
+#endif
+
 open MonoTouch.Design
+
+open iOSDesignerTypeProvider.ProvidedTypes
 
 module Sanitise =
     let cleanTrailing = String.trimEnd [|':'|]
