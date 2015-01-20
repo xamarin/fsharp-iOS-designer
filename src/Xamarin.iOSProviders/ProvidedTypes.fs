@@ -1,3 +1,6 @@
+#nowarn "40"
+#nowarn "52"
+// Based on code for the F# 3.0 Developer Preview release of September 2011,
 // Copyright (c) Microsoft Corporation 2005-2012.
 // This sample code is provided "as is" without warranty of any kind. 
 // We disclaim all warranties, either express or implied, including the 
@@ -5,8 +8,8 @@
 
 // This file contains a set of helper types and methods for providing types in an implementation 
 // of ITypeProvider.
-//
-// This code is a sample for use in conjunction with the F# 3.0 Beta release of March 2012
+
+// This code has been modified and is appropriate for use in conjunction with the F# 3.0, F# 3.1, and F# 3.1.1 releases
 
 namespace ProviderImplementation.ProvidedTypes
 
@@ -329,7 +332,7 @@ module internal Misc =
 
     let RightPipe = <@@ (|>) @@>
     let inlineRightPipe expr = 
-        let rec loop = traverse loopCore
+        let rec loop expr = traverse loopCore expr
         and loopCore fallback orig = 
             match orig with
             | DP.SpecificCall RightPipe (None, _, [operand; applicable]) ->
@@ -347,7 +350,7 @@ module internal Misc =
 
     let inlineValueBindings e = 
         let map = Dictionary(HashIdentity.Reference)
-        let rec loop = traverse loopCore
+        let rec loop expr = traverse loopCore expr
         and loopCore fallback orig = 
             match orig with
             | P.Let(id, (P.Value(_) as v), body) when not id.IsMutable ->
@@ -364,7 +367,7 @@ module internal Misc =
 
 
     let optimizeCurriedApplications expr = 
-        let rec loop = traverse loopCore
+        let rec loop expr = traverse loopCore expr
         and loopCore fallback orig = 
             match orig with
             | P.Application(e, arg) -> 
@@ -839,6 +842,7 @@ type ProvidedField(fieldName:string,fieldType:Type) =
     override this.FieldHandle = notRequired "FieldHandle" this.Name
 
 /// Represents the type constructor in a provided symbol type.
+[<NoComparison>]
 type SymbolKind = 
     | SDArray 
     | Array of int 
@@ -1124,7 +1128,7 @@ type ProvidedMeasureBuilder() =
 
 
 
-[<RequireQualifiedAccess>]
+[<RequireQualifiedAccess; NoComparison>]
 type TypeContainer =
   | Namespace of Assembly * string // namespace
   | Type of System.Type
@@ -1237,7 +1241,7 @@ type ProvidedTypeDefinition(container:TypeContainer,className : string, baseType
     member this.AddObsoleteAttribute (msg,?isError)         = customAttributesImpl.AddObsolete (msg,defaultArg isError false)
     member this.AddDefinitionLocation(line,column,filePath) = customAttributesImpl.AddDefinitionLocation(line, column, filePath)
     member this.HideObjectMethods with set v                = customAttributesImpl.HideObjectMethods <- v
-    member __.GetCustomAttributesDataImpl()                 = customAttributesImpl.GetCustomAttributesData()
+    member __.GetCustomAttributesDataImpl() = customAttributesImpl.GetCustomAttributesData()
     member this.AddCustomAttribute attribute                = customAttributesImpl.AddCustomAttribute attribute
 #if FX_NO_CUSTOMATTRIBUTEDATA
 #else
@@ -1704,11 +1708,11 @@ type AssemblyGenerator(assemblyFileName) =
             for finfo in ptd.GetFields(ALL) do
                 let fieldInfo = 
                     match finfo with 
-                    | :? ProvidedField as pinfo -> 
-                        Some (pinfo.Name, convType finfo.FieldType, finfo.Attributes, pinfo.GetCustomAttributesDataImpl(), None)
-                    | :? ProvidedLiteralField as pinfo ->
-                        Some (pinfo.Name, convType finfo.FieldType, finfo.Attributes, pinfo.GetCustomAttributesDataImpl(), Some (pinfo.GetRawConstantValue()))
-                    | _ -> None
+                        | :? ProvidedField as pinfo -> 
+                            Some (pinfo.Name, convType finfo.FieldType, finfo.Attributes, pinfo.GetCustomAttributesDataImpl(), None)
+                        | :? ProvidedLiteralField as pinfo ->
+                            Some (pinfo.Name, convType finfo.FieldType, finfo.Attributes, pinfo.GetCustomAttributesDataImpl(), Some (pinfo.GetRawConstantValue()))
+                        | _ -> None
                 match fieldInfo with
                 | Some (name, ty, attr, cattr, constantVal) when not (fieldMap.ContainsKey finfo) ->
                     let fb = tb.DefineField(name, ty, attr)
@@ -2225,11 +2229,11 @@ type AssemblyGenerator(assemblyFileName) =
                 let parameters = 
                     [| for v in parameterVars -> Quotations.Expr.Var v |]
                 match pcinfo.GetBaseConstructorCallInternal true with
-                | None ->
+                | None ->  
                     ilg.Emit(OpCodes.Ldarg_0)
                     let cinfo = ptd.BaseType.GetConstructor(BindingFlags.Public ||| BindingFlags.NonPublic ||| BindingFlags.Instance, null, [| |], null)
                     ilg.Emit(OpCodes.Call,cinfo)
-                | Some f ->
+                | Some f -> 
                     // argExprs should always include 'this'
                     let (cinfo,argExprs) = f (Array.toList parameters)
                     for argExpr in argExprs do 
@@ -2366,7 +2370,7 @@ type ProvidedAssembly(assemblyFileName: string) =
         //printfn "registered assembly in '%s'" fileName
         let assemblyBytes = System.IO.File.ReadAllBytes fileName
         let assembly = Assembly.Load(assemblyBytes,null,System.Security.SecurityContextSource.CurrentAppDomain)
-        GlobalProvidedAssemblyElementsTable.theTable.Add(assembly, Lazy.CreateFromValue assemblyBytes)
+        GlobalProvidedAssemblyElementsTable.theTable.Add(assembly, Lazy<_>.CreateFromValue assemblyBytes)
         assembly
 #endif
 
@@ -2549,6 +2553,6 @@ type TypeProviderForNamespaces(namespacesAndTypes : list<(string * list<Provided
             | true,bytes -> bytes.Force()
             | _ -> 
                 let bytes = System.IO.File.ReadAllBytes assembly.ManifestModule.FullyQualifiedName
-                GlobalProvidedAssemblyElementsTable.theTable.[assembly] <- Lazy.CreateFromValue bytes
+                GlobalProvidedAssemblyElementsTable.theTable.[assembly] <- Lazy<_>.CreateFromValue bytes
                 bytes
 #endif
