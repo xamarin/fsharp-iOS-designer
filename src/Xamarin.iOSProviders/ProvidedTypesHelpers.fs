@@ -54,3 +54,20 @@ module ProvidedTypes =
 
         //creates an empty expression in the form of a unit or ()
         let emptyInvoke = fun _ -> <@@ () @@>
+
+    module String =
+
+        let private test_null =
+            function
+            | null -> System.ArgumentNullException "arg" |> raise
+            | _ -> ()
+
+        let capitalize (s : string) =
+            test_null s
+            if s.Length = 0 then ""
+            else (s.[0..0]).ToUpperInvariant () + s.[1 .. s.Length - 1]
+
+        let uncapitalize (s : string) =
+            test_null s
+            if s.Length = 0 then ""
+            else (s.[0..0]).ToLowerInvariant() + s.[1 .. s.Length - 1]
