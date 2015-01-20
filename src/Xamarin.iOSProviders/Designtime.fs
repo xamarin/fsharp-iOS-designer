@@ -6,17 +6,9 @@ open System.Reflection
 open ProviderImplementation.ProvidedTypes
 open Microsoft.FSharp.Core.CompilerServices
 open Microsoft.FSharp.Quotations
- 
-#if Classic   
-open MonoTouch.Foundation
-open MonoTouch.UIKit
-#else
 open Foundation
 open UIKit
-#endif
-
 open MonoTouch.Design
-
 open iOSDesignerTypeProvider.ProvidedTypes
 
 module Sanitise =
