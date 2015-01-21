@@ -65,10 +65,10 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
         assembly.AddTypes [container]
         container
 
-    do  rootType.DefineStaticParameters([ProvidedStaticParameter ("DesignerFile", typeof<string>)
-                                         ProvidedStaticParameter ("IsRegistered", typeof<bool>, false)
-                                         ProvidedStaticParameter ("IsAbstract",   typeof<bool>, true)
-                                         ProvidedStaticParameter ("AddUnitCtor",  typeof<bool>, false)], buildTypes)
+    do  rootType.DefineStaticParameters([ProvidedStaticParameter ("StoryBoard",            typeof<string>)
+                                         ProvidedStaticParameter ("AddRegisteration",      typeof<bool>, false)
+                                         ProvidedStaticParameter ("AbstractController",    typeof<bool>, true)
+                                         ProvidedStaticParameter ("AddDefaultConstructor", typeof<bool>, false)], buildTypes)
         
         this.AddNamespace(ns, [rootType])
         this.Disposing.Add (fun _ -> if !watchedFile <> null then (!watchedFile).Dispose())
