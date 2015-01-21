@@ -47,11 +47,10 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
             | :? Xib as xib -> failwith "Xib files are currently not supported"
             | _ -> failwith "Could not parse file, no storyboard or xib types were found"
 
-        let generated = 
-            scenes 
-            |> Seq.map (fun scene -> scene.ViewController) 
-            |> Seq.filter (fun vc -> not (String.IsNullOrWhiteSpace vc.CustomClass) )
-            |> Seq.map (fun vc -> vc, TypeBuilder.buildController designerFile vc isAbstract addUnitCtor register config)
+        let generated =
+            seq { for sc in scenes do
+                  if not (String.IsNullOrWhiteSpace sc.ViewController.CustomClass) then
+                      yield sc.ViewController, TypeBuilder.buildController designerFile sc.ViewController isAbstract addUnitCtor register config }
         
         //Add the types to the container
         for (vc, pt) in generated do
