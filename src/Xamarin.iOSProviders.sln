@@ -110,7 +110,4 @@ Global
 		{F48CC224-6953-45C3-B830-1F25154AF3DD} = {BE30658A-D953-4502-BC46-8FA995D94269}
 		{AEBE047E-D853-4C3C-B6BC-AF12F8339470} = {BE30658A-D953-4502-BC46-8FA995D94269}
 	EndGlobalSection
-	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = Xamarin.iOSProviders\Xamarin.iOSProviders.fsproj
-	EndGlobalSection
 EndGlobal

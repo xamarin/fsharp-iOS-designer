@@ -1,16 +1,16 @@
 ﻿namespace cstest
 
 open System
-open MonoTouch.UIKit
-open MonoTouch.Foundation
+open UIKit
+open Foundation
 open Xamarin.iOSProviders
 
 //view controller is generated from the type provider and embedded into the assembly here
-type VCContainer = UIProvider<"../StoryBoards/Main.storyboard">
+type VCContainer = UIProvider<"Main.storyboard">
 
 [<Register (VCContainer.cstestViewControllerBase.CustomClass) >]
-type MyViewController(handle) =
-    inherit VCContainer.cstestViewControllerBase(handle)
+type MyViewController (handle) =
+    inherit VCContainer.cstestViewControllerBase (handle)
 
     //Overrides are implemented on the derived type   
     override x.ViewDidLoad() =

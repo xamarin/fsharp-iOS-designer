@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "Xamarin.iOSProviders", "Xamarin.iOSProviders.fsproj", "{DD17E7B0-6EE1-4862-80F8-E0CAB67D6137}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DD17E7B0-6EE1-4862-80F8-E0CAB67D6137}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD17E7B0-6EE1-4862-80F8-E0CAB67D6137}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD17E7B0-6EE1-4862-80F8-E0CAB67D6137}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD17E7B0-6EE1-4862-80F8-E0CAB67D6137}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = Xamarin.iOSProviders.fsproj
+	EndGlobalSection
+EndGlobal

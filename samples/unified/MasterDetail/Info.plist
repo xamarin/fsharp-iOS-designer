@@ -7,12 +7,16 @@
 		<integer>1</integer>
 	</array>
 	<key>MinimumOSVersion</key>
-	<string>7.0</string>
+	<string>8.0</string>
 	<key>CFBundleVersion</key>
 	<string>1.0</string>
 	<key>CFBundleShortVersionString</key>
 	<string>1.0</string>
 	<key>UIMainStoryboardFile</key>
 	<string>MainStoryboard</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.your-company.fsharp_masterdetail</string>
+	<key>CFBundleDisplayName</key>
+	<string>fsharp_masterdetail</string>
 </dict>
 </plist>

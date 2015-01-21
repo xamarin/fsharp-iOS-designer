@@ -8,8 +8,6 @@
     <RootNamespace>iOSDesignerTypeProvider</RootNamespace>
     <AssemblyName>Xamarin.iOSProviders</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -22,7 +20,7 @@
     <Externalconsole>true</Externalconsole>
     <CustomCommands>
       <CustomCommands>
-        <Command type="Execute" command="&quot;/Applications/Xamarin Studio.app/Contents/Resources/lib/monodevelop/bin/XamarinStudio.exe&quot; --no-redirect" workingdir="/Applications/Xamarin Studio.app/Contents/Resources/lib/monodevelop/bin" />
+        <Command type="Execute" command="../../../monodevelop/main/build/bin/MonoDevelop.exe" workingdir="../../../monodevelop/main/build/bin/" />
       </CustomCommands>
     </CustomCommands>
     <Optimize>false</Optimize>
@@ -40,46 +38,23 @@
     <Tailcalls>true</Tailcalls>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="mscorlib" />
-    <Reference Include="FSharp.Core" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="monotouch">
-      <HintPath>\Developer\MonoTouch\usr\lib\mono\2.1\monotouch.dll</HintPath>
-    </Reference>
-    <Reference Include="FSharp.PowerPack">
-      <HintPath>..\packages\FSPowerPack.Community.2.1.3.1\Lib\Net40\FSharp.PowerPack.dll</HintPath>
-    </Reference>
-    <Reference Include="FSharp.PowerPack.Linq">
-      <HintPath>..\packages\FSPowerPack.Community.2.1.3.1\Lib\Net40\FSharp.PowerPack.Linq.dll</HintPath>
-    </Reference>
-    <Reference Include="FSharp.PowerPack.Metadata">
-      <HintPath>..\packages\FSPowerPack.Community.2.1.3.1\Lib\Net40\FSharp.PowerPack.Metadata.dll</HintPath>
-    </Reference>
-    <Reference Include="FSharp.PowerPack.Parallel.Seq">
-      <HintPath>..\packages\FSPowerPack.Community.2.1.3.1\Lib\Net40\FSharp.PowerPack.Parallel.Seq.dll</HintPath>
-    </Reference>
-    <Reference Include="FSharp.Compatibility.OCaml">
-      <HintPath>..\packages\FSharp.Compatibility.OCaml.0.1.10\lib\net40\FSharp.Compatibility.OCaml.dll</HintPath>
-    </Reference>
-    <Reference Include="FSharp.PowerPack.Compatibility">
-      <HintPath>..\packages\FSPowerPack.Community.2.1.3.1\Tools\FSharp.PowerPack.Compatibility.dll</HintPath>
-    </Reference>
     <Reference Include="MonoTouch.Design">
-      <HintPath>\Applications\Xamarin Studio.app\Contents\MacOS\lib\monodevelop\AddIns\MonoDevelop.IPhone\MonoTouch.Design.dll</HintPath>
+      <HintPath>\Applications\Xamarin Studio.app\Contents\Resources\lib\monodevelop\AddIns\MonoDevelop.IPhone\MonoTouch.Design.dll</HintPath>
     </Reference>
     <Reference Include="MonoTouch.Design.Client">
-      <HintPath>\Applications\Xamarin Studio.app\Contents\MacOS\lib\monodevelop\AddIns\MonoDevelop.IPhone\MonoTouch.Design.Client.dll</HintPath>
+      <HintPath>\Applications\Xamarin Studio.app\Contents\Resources\lib\monodevelop\AddIns\MonoDevelop.IPhone\MonoTouch.Design.Client.dll</HintPath>
     </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="ExtCore">
-      <HintPath>..\packages\ExtCore.0.8.42\lib\net40\ExtCore.dll</HintPath>
+      <HintPath>..\packages\ExtCore.0.8.45\lib\net45\ExtCore.dll</HintPath>
     </Reference>
     <Reference Include="Xamarin.iOS">
-      <HintPath>\Developer\MonoTouch\usr\lib\mono\Xamarin.iOS\Xamarin.iOS.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Library\Frameworks\Xamarin.iOS.framework\Versions\8.6.1.9\lib\64bits\Xamarin.iOS.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
