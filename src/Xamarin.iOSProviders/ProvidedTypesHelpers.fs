@@ -8,7 +8,7 @@ open ProviderImplementation.ProvidedTypes
 
 module ProvidedTypes =
     module BindingFlags =
-        let publicInstance = BindingFlags.Public ||| BindingFlags.Instance
+        let AllInstance = BindingFlags.Public ||| BindingFlags.Instance ||| BindingFlags.NonPublic
 
     type CustomAttributeDataExt =
         static member Make(ctorInfo, ?args, ?namedArgs) = 
@@ -19,16 +19,20 @@ module ProvidedTypes =
 
     type Type with
         member x.GetConstructor(typ) =
-            x.GetConstructor([|typ|])
+            x.GetConstructor(BindingFlags.AllInstance, Type.DefaultBinder, [|typ|], [||] )
 
         member x.TryGetConstructor(typ:Type) =
-            x.GetConstructor(typ) |> function null -> None | v -> Some v
+            match x.GetConstructor(typ) with
+            | null -> None
+            | v -> Some v
 
         member x.GetUnitConstructor() =
             x.GetConstructor([||])
 
         member x.TryGetUnitConstructor() =
-            x.GetUnitConstructor() |> function null -> None | v -> Some v
+            match x.GetUnitConstructor() with
+            | null -> None
+            | v -> Some v
 
         member x.GetVirtualMethods() = 
             x.GetMethods (BindingFlags.Instance ||| BindingFlags.Public ||| BindingFlags.DeclaredOnly) 
