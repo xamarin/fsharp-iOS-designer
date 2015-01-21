@@ -54,7 +54,7 @@
       <HintPath>..\packages\ExtCore.0.8.45\lib\net45\ExtCore.dll</HintPath>
     </Reference>
     <Reference Include="Xamarin.iOS">
-      <HintPath>..\..\..\..\..\..\..\Library\Frameworks\Xamarin.iOS.framework\Versions\8.6.1.9\lib\64bits\Xamarin.iOS.dll</HintPath>
+      <HintPath>\Library\Frameworks\Xamarin.iOS.framework\Versions\Current\lib\64bits\Xamarin.iOS.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

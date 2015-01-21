@@ -13,8 +13,7 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
     inherit TypeProviderForNamespaces()
 
     //TODO figure out how to find this properly, must be a env var or something.
-    let assemblybase = "/Developer/MonoTouch/usr/lib/mono/2.1/"
-
+    let assemblybase = "/Developer/MonoTouch/usr/lib/mono/Xamarin.iOS/"
     do this.RegisterProbingFolder assemblybase    
 
     let ns = "Xamarin.iOSProviders"
