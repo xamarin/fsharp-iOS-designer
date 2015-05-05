@@ -42,7 +42,7 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
                     let xdoc = XDocument.Load(stream)
                     stream.Close ()
                     let scenes = 
-                        match Parser.Instance.Parse(xdoc.Root) with
+                        match Parser.Instance.Parse(xdoc.Root, DeviceFamily.Undefined) with
                         | :? Storyboard as sb -> sb.Scenes
                         | :? Xib as _xib -> failwith "Xib files are currently not supported"
                         | _ -> failwith "Could not parse file, no supported files were found"
