@@ -63,7 +63,7 @@ module ProvidedTypes =
 
         let private test_null =
             function
-            | null -> System.ArgumentNullException "arg" |> raise
+            | null -> raise (ArgumentNullException "arg")
             | _ -> ()
 
         let capitalize (s : string) =
