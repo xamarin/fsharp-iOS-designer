@@ -6,7 +6,7 @@ open Foundation
 open Xamarin.iOSProviders
 
 //view controller is generated from the type provider and embedded into the assembly here
-type VCContainer = UIProvider<"Main.storyboard">
+type VCContainer = UIProvider
 
 [<Register (VCContainer.cstestViewControllerBase.CustomClass) >]
 type MyViewController (handle) =

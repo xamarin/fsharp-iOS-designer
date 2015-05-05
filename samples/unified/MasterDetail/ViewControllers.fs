@@ -6,7 +6,7 @@ open Foundation
 open Xamarin.iOSProviders
 
 //view controllers are generated from the type provider and embedded into the assembly here
-type Container = UIProvider<"MainStoryboard.storyboard">
+type Container = UIProvider
 
 type DataSource (controller:UITableViewController) =
     inherit UITableViewSource()

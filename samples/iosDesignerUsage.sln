@@ -7,6 +7,8 @@ Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "fsharp_masterdetail", "unif
 EndProject
 Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "fullTest", "unified\fullTest\fullTest.fsproj", "{A202739B-6E4E-4772-A2B6-2E427643FF15}"
 EndProject
+Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "SingleViewUniversal", "unified\SingleViewUniversal\SingleViewUniversal.fsproj", "{4A95C0B9-1453-47C0-B6A1-FEE6122BD11A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -35,6 +37,22 @@ Global
 		{14BE2E7C-3220-4128-A8B2-45DCB985B844}.Release|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
 		{14BE2E7C-3220-4128-A8B2-45DCB985B844}.Release|x86.ActiveCfg = Debug|iPhoneSimulator
 		{14BE2E7C-3220-4128-A8B2-45DCB985B844}.Release|x86.Build.0 = Debug|iPhoneSimulator
+		{4A95C0B9-1453-47C0-B6A1-FEE6122BD11A}.Ad-Hoc|iPhone.ActiveCfg = Ad-Hoc|iPhone
+		{4A95C0B9-1453-47C0-B6A1-FEE6122BD11A}.Ad-Hoc|iPhone.Build.0 = Ad-Hoc|iPhone
+		{4A95C0B9-1453-47C0-B6A1-FEE6122BD11A}.AppStore|iPhone.ActiveCfg = AppStore|iPhone
+		{4A95C0B9-1453-47C0-B6A1-FEE6122BD11A}.AppStore|iPhone.Build.0 = AppStore|iPhone
+		{4A95C0B9-1453-47C0-B6A1-FEE6122BD11A}.Debug|iPhone.ActiveCfg = Debug|iPhone
+		{4A95C0B9-1453-47C0-B6A1-FEE6122BD11A}.Debug|iPhone.Build.0 = Debug|iPhone
+		{4A95C0B9-1453-47C0-B6A1-FEE6122BD11A}.Debug|iPhoneSimulator.ActiveCfg = Debug|iPhoneSimulator
+		{4A95C0B9-1453-47C0-B6A1-FEE6122BD11A}.Debug|iPhoneSimulator.Build.0 = Debug|iPhoneSimulator
+		{4A95C0B9-1453-47C0-B6A1-FEE6122BD11A}.Debug|x86.ActiveCfg = Debug|iPhoneSimulator
+		{4A95C0B9-1453-47C0-B6A1-FEE6122BD11A}.Debug|x86.Build.0 = Debug|iPhoneSimulator
+		{4A95C0B9-1453-47C0-B6A1-FEE6122BD11A}.Release|iPhone.ActiveCfg = Release|iPhone
+		{4A95C0B9-1453-47C0-B6A1-FEE6122BD11A}.Release|iPhone.Build.0 = Release|iPhone
+		{4A95C0B9-1453-47C0-B6A1-FEE6122BD11A}.Release|iPhoneSimulator.ActiveCfg = Release|iPhoneSimulator
+		{4A95C0B9-1453-47C0-B6A1-FEE6122BD11A}.Release|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
+		{4A95C0B9-1453-47C0-B6A1-FEE6122BD11A}.Release|x86.ActiveCfg = Debug|iPhoneSimulator
+		{4A95C0B9-1453-47C0-B6A1-FEE6122BD11A}.Release|x86.Build.0 = Debug|iPhoneSimulator
 		{A202739B-6E4E-4772-A2B6-2E427643FF15}.Ad-Hoc|iPhone.ActiveCfg = Ad-Hoc|iPhone
 		{A202739B-6E4E-4772-A2B6-2E427643FF15}.Ad-Hoc|iPhone.Build.0 = Ad-Hoc|iPhone
 		{A202739B-6E4E-4772-A2B6-2E427643FF15}.AppStore|iPhone.ActiveCfg = AppStore|iPhone
@@ -55,5 +73,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{14BE2E7C-3220-4128-A8B2-45DCB985B844} = {84C29D09-A71E-4B50-BD40-A679904BB3D9}
 		{A202739B-6E4E-4772-A2B6-2E427643FF15} = {84C29D09-A71E-4B50-BD40-A679904BB3D9}
+		{4A95C0B9-1453-47C0-B6A1-FEE6122BD11A} = {84C29D09-A71E-4B50-BD40-A679904BB3D9}
 	EndGlobalSection
 EndGlobal
