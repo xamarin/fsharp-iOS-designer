@@ -152,7 +152,7 @@ module TypeBuilder =
                  | subviews ->
                      yield! subviews
                             |> Seq.collect (fun sv -> sv.Actions)
-                            |> Seq.distinctBy (fun a -> a)
+                            |> Seq.distinct
                             |> Seq.collect buildAction]
 
         providedController.AddMembers actionProvidedMembers 
