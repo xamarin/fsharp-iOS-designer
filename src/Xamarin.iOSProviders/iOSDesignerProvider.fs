@@ -30,10 +30,6 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
         let isAbstract = parameterValues.[1] :?> bool
         let addUnitCtor = parameterValues.[2] :?> bool
 
-        let a = [""]
-        a |> Seq.iter (printfn "%s")
-
-
         let scenes = 
             seq { for storyboard in allStoryBoards do
 
