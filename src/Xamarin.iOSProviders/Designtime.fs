@@ -40,15 +40,46 @@ module TypeBuilder =
 
     let typeMap (proxy:ProxiedUiKitObject) =
         //TODO: Expand this to also search in user assemblies
+        let hasRegisterAttribute (typ:Type) =
+          query {for ca in typ.CustomAttributes do
+                   exists (ca.AttributeType = typeof<RegisterAttribute>) }
+
+        let hasMatchingAttributeName (typ:Type) proxyClassName = 
+          query {for ca in typ.CustomAttributes do
+                  exists (match ca.ConstructorArguments |> Seq.map (fun ca -> ca.Value) |> Seq.toList with   
+                          | [:? string as name] -> name = proxyClassName
+                          | [:? string as name; :? bool as _isWrapper] -> name = proxyClassName
+                          | _ -> false) }
+
         let monotouchAssembly = typeof<UIButton>.Assembly
-        query { for typ in monotouchAssembly.ExportedTypes do
-                where (query {for ca in typ.CustomAttributes do
-                              exists (ca.AttributeType = typeof<RegisterAttribute> && 
-                                      match ca.ConstructorArguments |> Seq.map (fun ca -> ca.Value) |> Seq.toList with   
-                                      | [:? string as name; :? bool as _isWrapper] -> name = proxy.ClassName
-                                      | _ -> false)})
-                select typ
-                exactlyOne }
+        //debug
+        let allTypes =
+          query { for typ in monotouchAssembly.ExportedTypes do
+                    where ((hasRegisterAttribute typ))
+                    select typ } |> Seq.toArray
+
+                            //debug
+        let typeAndCa =
+          query { for typ in allTypes do
+                    let cs = typ.CustomAttributes |> Seq.find (fun ca -> ca.AttributeType = typeof<RegisterAttribute> )
+                    select (typ.Name, cs) } |> Seq.toArray
+
+        let justRegister = 
+          typeAndCa |> Array.map (fun (a,b) -> match b.ConstructorArguments |> Seq.map (fun ca -> ca.Value) |> Seq.toList  with
+                                               | [:? string as name] -> name
+                                               | [:? string as name; :? bool as _isWrapper] -> name
+                                               | _-> "invalid") |> Array.sort
+
+        let justType =
+          typeAndCa |> Array.map (fun (a, b) -> a) |> Array.sort
+
+        //------------------------------
+        let matches =
+          query { for typ in monotouchAssembly.ExportedTypes do
+                    where ((hasRegisterAttribute typ) && (hasMatchingAttributeName typ proxy.CodeGenerationBaseClass))
+                    select typ
+                    exactlyOne }
+        matches
 
     //TODO add option for ObservableSource<NSObject>, potentially unneeded as outlets exposes this with observable...
     let buildAction (action:ActionConnection) =
@@ -74,7 +105,7 @@ module TypeBuilder =
             let uiProxy = vc.Storyboard.FindById (outlet.Destination) :?> ProxiedUiKitObject
             let outletField, outletProperty =
                 ProvidedTypes.ProvidedPropertyWithField (Sanitise.makeFieldName outlet.Property,
-                                                         Sanitise.makePascalCase outlet.Property,
+                                                         Sanitise.cleanTrailing outlet.Property,
                                                          typeMap uiProxy)
             outletProperty.AddCustomAttribute <| Attributes.MakeOutletAttributeData()
 
@@ -173,7 +204,7 @@ module TypeBuilder =
 
         //add outlet release                                                                       
         providedController.AddMember releaseOutletsMethod
-         
+
         providedController
 
     // add InitialViewController to container as property, only the root controller should have this
