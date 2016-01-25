@@ -128,7 +128,7 @@ module TypeBuilder =
 
     let buildReleaseOutletsMethod fields =
         ProvidedMethod("ReleaseDesignerOutlets", [], typeof<Void>, 
-                       InvokeCode = function 
+                       InvokeCode = function
                                     | [instance] -> if List.isEmpty fields then Expr.emptyInvoke ()
                                                     else buildReleaseOutletsExpr instance fields
                                     | _ -> invalidOp "Too many arguments")
@@ -175,16 +175,16 @@ module TypeBuilder =
         //actions
         let actionProvidedMembers =
             [for vc in vcs do
-                 match vc.View with
-                 | null -> ()
-                 | view ->
-                 match view.Subviews with
-                 | null -> ()
-                 | subviews ->
-                     yield! subviews
-                            |> Seq.collect (fun sv -> sv.Actions)
-                            |> Seq.distinct
-                            |> Seq.collect buildAction]
+                match vc.View with
+                | null -> ()
+                | view ->
+                    match view.Subviews with
+                    | null -> ()
+                    | subviews ->
+                        yield! subviews
+                               |> Seq.collect (fun sv -> sv.Actions)
+                               |> Seq.distinct
+                               |> Seq.collect buildAction]
 
         providedController.AddMembers actionProvidedMembers 
       
@@ -193,9 +193,8 @@ module TypeBuilder =
             [for vc in vcs do
                  for outlet in vc.Outlets do
                      yield vc, outlet ]
-            |> Seq.distinctBy (fun (_, outlet) -> outlet.Property)
-            |> Seq.map buildOutlet
-            |> Seq.toList
+            |> List.distinctBy (fun (_, outlet) -> outlet.Property)
+            |> List.map buildOutlet
 
         for (field, property) in providedOutlets do
             providedController.AddMembers [field :> MemberInfo; property :> _]
