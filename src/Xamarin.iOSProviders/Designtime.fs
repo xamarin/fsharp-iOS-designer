@@ -52,26 +52,26 @@ module TypeBuilder =
                           | _ -> false) }
 
         let monotouchAssembly = typeof<UIButton>.Assembly
-        //debug
-        let allTypes =
-          query { for typ in monotouchAssembly.ExportedTypes do
-                    where ((hasRegisterAttribute typ))
-                    select typ } |> Seq.toArray
+//debug
+//        let allTypes =
+//          query { for typ in monotouchAssembly.ExportedTypes do
+//                    where ((hasRegisterAttribute typ))
+//                    select typ } |> Seq.toArray
+//
 
-                            //debug
-        let typeAndCa =
-          query { for typ in allTypes do
-                    let cs = typ.CustomAttributes |> Seq.find (fun ca -> ca.AttributeType = typeof<RegisterAttribute> )
-                    select (typ.Name, cs) } |> Seq.toArray
-
-        let justRegister = 
-          typeAndCa |> Array.map (fun (a,b) -> match b.ConstructorArguments |> Seq.map (fun ca -> ca.Value) |> Seq.toList  with
-                                               | [:? string as name] -> name
-                                               | [:? string as name; :? bool as _isWrapper] -> name
-                                               | _-> "invalid") |> Array.sort
-
-        let justType =
-          typeAndCa |> Array.map (fun (a, b) -> a) |> Array.sort
+//        let typeAndCa =
+//          query { for typ in allTypes do
+//                    let cs = typ.CustomAttributes |> Seq.find (fun ca -> ca.AttributeType = typeof<RegisterAttribute> )
+//                    select (typ.Name, cs) } |> Seq.toArray
+//
+//        let justRegister = 
+//          typeAndCa |> Array.map (fun (a,b) -> match b.ConstructorArguments |> Seq.map (fun ca -> ca.Value) |> Seq.toList  with
+//                                               | [:? string as name] -> name
+//                                               | [:? string as name; :? bool as _isWrapper] -> name
+//                                               | _-> "invalid") |> Array.sort
+//
+//        let justType =
+//          typeAndCa |> Array.map (fun (a, b) -> a) |> Array.sort
 
         //------------------------------
         let matches =
