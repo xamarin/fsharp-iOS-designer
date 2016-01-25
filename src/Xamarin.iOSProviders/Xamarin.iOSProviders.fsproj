@@ -14,8 +14,7 @@
     <OutputPath>bin\Debug</OutputPath>
     <DefineConstants>DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
-    <PlatformTarget>
-    </PlatformTarget>
+    <PlatformTarget></PlatformTarget>
     <Externalconsole>true</Externalconsole>
     <CustomCommands>
       <CustomCommands>
@@ -31,12 +30,10 @@
     <Optimize>true</Optimize>
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
-    <PlatformTarget>
-    </PlatformTarget>
+    <PlatformTarget></PlatformTarget>
     <ConsolePause>false</ConsolePause>
     <Tailcalls>true</Tailcalls>
-    <DefineConstants>
-    </DefineConstants>
+    <DefineConstants></DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -70,7 +67,7 @@
     <Compile Include="iOSDesignerProvider.fs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
-  <ItemGroup>
+<ItemGroup>
     <None Include="packages.config" />
     <None Include="Script.fsx" />
   </ItemGroup>
