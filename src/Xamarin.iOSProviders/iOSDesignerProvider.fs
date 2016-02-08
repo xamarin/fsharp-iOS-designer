@@ -51,10 +51,6 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
                        where (not (String.IsNullOrWhiteSpace scene.ViewController.CustomClass) && scene.ViewController.CustomClass=customClass)
                        groupValBy scene.ViewController scene.ViewController.CustomClass}
 
-
-        //generate storyboard container
-        //let container = ProvidedTypeDefinition(asm, ns, typeName, Some(typeof<obj>), IsErased=false)
-
         let generatedTypes =
             [ for sc in groupedViewControllers do
                   let vcs = sc.AsEnumerable()
@@ -62,7 +58,6 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
 
 
         rootType.AddMember generatedTypes
-        //assembly.AddTypes [generatedTypes]
         generatedTypes
 
     do  
