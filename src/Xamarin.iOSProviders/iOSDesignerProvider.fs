@@ -53,8 +53,7 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
 
         let generatedTypes =
             [ for sc in groupedViewControllers do
-                  let vcs = sc.AsEnumerable()
-                  yield TypeBuilder.buildController vcs isAbstract addUnitCtor register config typeName ] |> List.head
+                  yield TypeBuilder.buildController sc isAbstract addUnitCtor register config typeName ] |> List.head
 
 
         rootType.AddMember generatedTypes
