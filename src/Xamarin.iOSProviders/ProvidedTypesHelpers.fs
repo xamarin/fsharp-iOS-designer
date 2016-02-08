@@ -1,4 +1,4 @@
-﻿namespace iOSDesignerTypeProvider
+﻿namespace Xamarin.iOSProviders
 
 open System
 open System.Collections.Generic
@@ -6,6 +6,7 @@ open System.Reflection
 open Microsoft.FSharp.Quotations
 open ProviderImplementation.ProvidedTypes
 
+[<AutoOpen>]
 module ProvidedTypes =
     module BindingFlags =
         let AllInstance = BindingFlags.Public ||| BindingFlags.Instance ||| BindingFlags.NonPublic
@@ -49,6 +50,14 @@ module ProvidedTypes =
             property.SetterCode <- fun args -> Expr.FieldSet(args.[0], field, args.[1])
 
             field,property
+            
+    type ProvidedStaticParameter with
+        static member Create<'a>(paramName, defvalue: 'a) =
+            ProvidedStaticParameter( paramName, typeof<'a>, Some defvalue)
+            
+        [<RequiresExplicitTypeArguments>]
+        static member Create<'a>(paramName) =
+            ProvidedStaticParameter( paramName, typeof<'a>, None)
 
     module Expr =
         /// This helper makes working with Expr.Let a little easier and safer

@@ -18,10 +18,11 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
     let assemblybase = "/Developer/MonoTouch/usr/lib/mono/Xamarin.iOS/"
     do this.RegisterProbingFolder assemblybase    
 
-    let ns = "Xamarin.iOSProviders"
+    let ns = "Xamarin.TypeProviders"
     let asm = Assembly.GetExecutingAssembly()
-    let rootType = ProvidedTypeDefinition(asm, ns, "UIProvider", None, HideObjectMethods = true, IsErased = false)
+    let rootType = ProvidedTypeDefinition(asm, ns, "iOS", None, HideObjectMethods = true, IsErased = false)
     let watchedFiles = ResizeArray()
+    let assembly = ProvidedAssembly(Path.ChangeExtension(Path.GetTempFileName(), ".dll"))
     let buildTypes typeName (parameterValues: obj []) =
 
         let allStoryBoards = Directory.EnumerateFiles ( config.ResolutionFolder, "*.storyboard", SearchOption.AllDirectories) 
@@ -29,6 +30,7 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
         let register = parameterValues.[0] :?> bool
         let isAbstract = parameterValues.[1] :?> bool
         let addUnitCtor = parameterValues.[2] :?> bool
+        let customClass = unbox parameterValues.[3] // :?> string
 
         let scenes = 
             seq { for storyboard in allStoryBoards do
@@ -46,37 +48,31 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
 
         let groupedViewControllers = 
             query {for scene in scenes do
-                       where (not (String.IsNullOrWhiteSpace scene.ViewController.CustomClass))
+                       where (not (String.IsNullOrWhiteSpace scene.ViewController.CustomClass) && scene.ViewController.CustomClass=customClass)
                        groupValBy scene.ViewController scene.ViewController.CustomClass}
 
 
         //generate storyboard container
-        let container = ProvidedTypeDefinition(asm, ns, typeName, Some(typeof<obj>), IsErased=false)
+        //let container = ProvidedTypeDefinition(asm, ns, typeName, Some(typeof<obj>), IsErased=false)
 
         let generatedTypes =
             [ for sc in groupedViewControllers do
                   let vcs = sc.AsEnumerable()
-//                  if not (String.IsNullOrWhiteSpace sc.ViewController.CustomClass) then
-                  yield TypeBuilder.buildController vcs isAbstract addUnitCtor register config ]
-        
-        //Add the types to the container
-        container.AddMembers generatedTypes
+                  yield TypeBuilder.buildController vcs isAbstract addUnitCtor register config typeName ] |> List.head
 
-//        for pt in generatedTypes do
-//            container.AddMember pt
-//            if vc.IsInitialViewController then
-//                container.AddMember (TypeBuilder.buildInitialController pt designerFile)
 
-        //pump types into the correct assembly
-        let assembly = ProvidedAssembly(Path.ChangeExtension(Path.GetTempFileName(), ".dll"))
-        assembly.AddTypes [container]
-        container
+        rootType.AddMember generatedTypes
+        //assembly.AddTypes [generatedTypes]
+        generatedTypes
 
-    do  rootType.DefineStaticParameters([ProvidedStaticParameter ("AddRegisteration",      typeof<bool>, false)
-                                         ProvidedStaticParameter ("AbstractController",    typeof<bool>, true)
-                                         ProvidedStaticParameter ("AddDefaultConstructor", typeof<bool>, false)], buildTypes)
-        
+    do  
+        assembly.AddTypes [rootType]
         this.AddNamespace(ns, [rootType])
+        rootType.DefineStaticParameters([ProvidedStaticParameter.Create ("AddRegisteration", false)
+                                         ProvidedStaticParameter.Create ("AbstractController", true)
+                                         ProvidedStaticParameter.Create ("AddDefaultConstructor", false)
+                                         ProvidedStaticParameter.Create<string>("CustomClass")], buildTypes)
+        
         this.Disposing.Add (fun _ -> for disposer in watchedFiles do disposer.Dispose ())
 
 [<assembly:TypeProviderAssembly()>] 

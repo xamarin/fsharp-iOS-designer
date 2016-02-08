@@ -3,29 +3,27 @@
 open System
 open UIKit
 open Foundation
-open Xamarin.iOSProviders
+open Xamarin.TypeProviders
 
 //view controller is generated from the type provider and embedded into the assembly here
-type VCContainer = UIProvider
+type SingleViewUniversalViewController =
+    Xamarin.TypeProviders.iOS<AddRegisteration=true,
+                              AbstractController=false,
+                              AddDefaultConstructor=true,
+                              CustomClass="SingleViewUniversalViewController"> 
+                                             
+type SingleViewUniversalViewController with
+    override x.ToString() = "42"
+    
+    override x.DidReceiveMemoryWarning () = ()
+        base.DidReceiveMemoryWarning () 
 
-[<Register (VCContainer.SingleViewUniversalViewControllerBase.CustomClass) >]
-type MyViewController (handle) =
-    inherit VCContainer.SingleViewUniversalViewControllerBase (handle)
-
-    override x.DidReceiveMemoryWarning () =
-        // Releases the view if it doesn't have a superview.
-        base.DidReceiveMemoryWarning ()
-        // Release any cached data, images, etc that aren't in use.
-
-    override x.ViewDidLoad () =
-        base.ViewDidLoad ()
-
-        // Perform any additional setup after loading the view, typically from a nib.
-
-    override x.ShouldAutorotateToInterfaceOrientation (toInterfaceOrientation) =
-        // Return true for supported orientations
-        if UIDevice.CurrentDevice.UserInterfaceIdiom = UIUserInterfaceIdiom.Phone then
-           toInterfaceOrientation <> UIInterfaceOrientation.PortraitUpsideDown
-        else
-           true
+    override x.ViewDidLoad () = ()
+        base.ViewDidLoad () 
+   
+    //override x.ShouldAutorotateTInterfaceOrientation (toInterfaceOrientation) =
+    //    if UIDevice.CurrentDevice.UserInterfaceIdiom = UIUserInterfaceIdiom.Phone then
+    //       toInterfaceOrientation <> UIInterfaceOrientation.PortraitUpsideDown
+    //    else
+    //       true
 

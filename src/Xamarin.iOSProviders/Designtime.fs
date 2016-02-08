@@ -9,7 +9,6 @@ open Microsoft.FSharp.Quotations
 open Foundation
 open UIKit
 open MonoTouch.Design
-open iOSDesignerTypeProvider.ProvidedTypes
 open ExtCore.Control
 
 module Sanitise =
@@ -37,43 +36,19 @@ module Attributes =
         CustomAttributeDataExt.Make (typeof<OutletAttribute>.GetUnitConstructor ())
 
 module TypeBuilder =
-
+    let monotouchAssembly = typeof<UIButton>.Assembly
     let typeMap (proxy:ProxiedUiKitObject) =
         //TODO: Expand this to also search in user assemblies
         let hasRegisterAttribute (typ:Type) =
-          query {for ca in typ.CustomAttributes do
-                   exists (ca.AttributeType = typeof<RegisterAttribute>) }
+            typ.CustomAttributes |> Seq.exists (fun ca -> ca.AttributeType = typeof<RegisterAttribute>)
 
         let hasMatchingAttributeName (typ:Type) proxyClassName = 
-          query {for ca in typ.CustomAttributes do
-                  exists (match ca.ConstructorArguments |> Seq.map (fun ca -> ca.Value) |> Seq.toList with   
-                          | [:? string as name] -> name = proxyClassName
-                          | [:? string as name; :? bool as _isWrapper] -> name = proxyClassName
-                          | _ -> false) }
+          typ.CustomAttributes
+          |> Seq.exists (fun ca -> match ca.ConstructorArguments |> Seq.map (fun ca -> ca.Value) |> Seq.toList with   
+                                   | [:? string as name] -> name = proxyClassName
+                                   | [:? string as name; :? bool as _isWrapper] -> name = proxyClassName
+                                   | _ -> false)
 
-        let monotouchAssembly = typeof<UIButton>.Assembly
-//debug
-//        let allTypes =
-//          query { for typ in monotouchAssembly.ExportedTypes do
-//                    where ((hasRegisterAttribute typ))
-//                    select typ } |> Seq.toArray
-//
-
-//        let typeAndCa =
-//          query { for typ in allTypes do
-//                    let cs = typ.CustomAttributes |> Seq.find (fun ca -> ca.AttributeType = typeof<RegisterAttribute> )
-//                    select (typ.Name, cs) } |> Seq.toArray
-//
-//        let justRegister = 
-//          typeAndCa |> Array.map (fun (a,b) -> match b.ConstructorArguments |> Seq.map (fun ca -> ca.Value) |> Seq.toList  with
-//                                               | [:? string as name] -> name
-//                                               | [:? string as name; :? bool as _isWrapper] -> name
-//                                               | _-> "invalid") |> Array.sort
-//
-//        let justType =
-//          typeAndCa |> Array.map (fun (a, b) -> a) |> Array.sort
-
-        //------------------------------
         let matches =
           query { for typ in monotouchAssembly.ExportedTypes do
                     where ((hasRegisterAttribute typ) && (hasMatchingAttributeName typ proxy.CodeGenerationBaseClass))
@@ -133,13 +108,13 @@ module TypeBuilder =
                                                     else buildReleaseOutletsExpr instance fields
                                     | _ -> invalidOp "Too many arguments")
 
-    let buildController (vcs: ProxiedViewController seq) isAbstract addUnitCtor register (config:TypeProviderConfig) =
+    let buildController (vcs: ProxiedViewController seq) isAbstract addUnitCtor register (config:TypeProviderConfig) typeName =
 
         //get the real type of the controller proxy
         let vcsTypes = vcs |> Seq.map typeMap 
         let vc = Seq.head vcs
         let controllerType = Seq.head vcsTypes
-        let className = if isAbstract then vc.CustomClass + "Base" else vc.CustomClass
+        let className = typeName //if isAbstract then vc.CustomClass + "Base" else vc.CustomClass
         let customClass = vc.CustomClass
 
         let providedController = ProvidedTypeDefinition (className, Some controllerType, IsErased = false )
@@ -205,13 +180,3 @@ module TypeBuilder =
         providedController.AddMember releaseOutletsMethod
 
         providedController
-
-    // add InitialViewController to container as property, only the root controller should have this
-//    let buildInitialController providedController (designerFile:Uri) = 
-//        let storyboardName = designerFile.AbsolutePath |> Path.GetFileNameWithoutExtension
-//        ProvidedMethod("CreateInitialViewController", [], providedController,
-//                       IsStaticMethod = true,
-//                       InvokeCode = fun _ -> let viewController = 
-//                                                <@@ let mainStoryboard = UIStoryboard.FromName (storyboardName, null)
-//                                                    mainStoryboard.InstantiateInitialViewController () @@>
-//                                             Expr.Coerce (viewController, providedController) )
