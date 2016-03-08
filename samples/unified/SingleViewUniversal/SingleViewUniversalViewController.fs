@@ -3,10 +3,9 @@
 open System
 open UIKit
 open Foundation
-open Xamarin.iOSProviders
 
 //view controller is generated from the type provider and embedded into the assembly here
-type VCContainer = UIProvider
+type VCContainer = Xamarin.UIProvider
 
 [<Register (VCContainer.SingleViewUniversalViewControllerBase.CustomClass) >]
 type MyViewController (handle) =
