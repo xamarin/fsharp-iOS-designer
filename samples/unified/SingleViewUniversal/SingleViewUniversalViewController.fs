@@ -18,6 +18,7 @@ type MyViewController (handle) =
 
     override x.ViewDidLoad () =
         base.ViewDidLoad ()
+        x.button1.TouchUpInside.Add(fun _ -> x.View.BackgroundColor <- UIColor.Blue)
 
         // Perform any additional setup after loading the view, typically from a nib.
 
