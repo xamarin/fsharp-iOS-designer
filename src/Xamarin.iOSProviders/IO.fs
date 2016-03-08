@@ -1,4 +1,4 @@
-﻿namespace Xamarin.iOSProviders
+﻿namespace Xamarin.UIProviders.DesignTime
 open System
 open System.Collections.Generic
 open System.IO

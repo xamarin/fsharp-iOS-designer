@@ -9,12 +9,6 @@ open Xamarin.iOSProviders
 
 //view controller is generated from the type provider and embedded into the assembly here
 type VCContainer = UIProvider<AbstractController=false>
-type VCContainer with
-  member x.Test () = 172
-//  override x.ToString() = ""
-
-type VCContainer.ViewController with
-  member x.ToString()  = "172"
 
 [<Register ("ViewController")>]
 type ViewController (handle:IntPtr) =

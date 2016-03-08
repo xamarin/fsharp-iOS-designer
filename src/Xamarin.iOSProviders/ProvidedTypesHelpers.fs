@@ -1,4 +1,4 @@
-﻿namespace iOSDesignerTypeProvider
+﻿namespace Xamarin.UIProviders.DesignTime
 
 open System
 open System.Collections.Generic
@@ -43,12 +43,19 @@ module ProvidedTypes =
             
             let field = ProvidedField( fieldName, typ)
             field.SetFieldAttributes FieldAttributes.Private
+            
 
             let property = ProvidedProperty(propertyName, typ, defaultArg parameters [])
             property.GetterCode <- fun args -> Expr.FieldGet(args.[0], field)
             property.SetterCode <- fun args -> Expr.FieldSet(args.[0], field, args.[1])
 
             field,property
+            
+    let mkProvidedLiteralField name (value: 'a) =
+        ProvidedLiteralField(name, typeof<'a>, value)
+        
+    let mkProvidedStaticParameter name (value: 'a) =
+        ProvidedStaticParameter(name, typeof<'a>, value)
 
     module Expr =
         /// This helper makes working with Expr.Let a little easier and safer

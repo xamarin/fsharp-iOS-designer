@@ -89,8 +89,8 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="Xamarin.iOS" />
-    <Reference Include="Xamarin.iOSProviders">
-      <HintPath>..\..\..\src\Xamarin.iOSProviders\bin\Debug\Xamarin.iOSProviders.dll</HintPath>
+    <Reference Include="Xamarin.UIProvider.iOSRuntime">
+      <HintPath>..\..\..\src\Build\Debug\Xamarin.UIProvider.iOSRuntime.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

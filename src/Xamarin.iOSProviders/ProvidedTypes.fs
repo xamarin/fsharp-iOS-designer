@@ -134,7 +134,7 @@ module internal Misc =
 #else
         { new CustomAttributeData() with 
 #endif
-                member __.Constructor =  typeof<System.ObsoleteAttribute>.GetConstructors() |> Array.find (fun x -> x.GetParameters().Length = 1)
+                member __.Constructor =  typeof<System.ObsoleteAttribute>.GetConstructors() |> Array.find (fun x -> x.GetParameters().Length = 2)
                 member __.ConstructorArguments = upcast [|CustomAttributeTypedArgument(typeof<string>, message) ; CustomAttributeTypedArgument(typeof<bool>, isError)  |]
                 member __.NamedArguments = upcast [| |] }
 
@@ -494,7 +494,7 @@ module internal Misc =
                             else
                             Some (args.[1], args.[1])
                         )
-                        |> Seq.item (n - 1)
+                        |> Seq.nth (n - 1)
 
                     let adaptMethod = getFastFuncType args resultType
                     let adapted = E.Call(adaptMethod, [loop applicable])

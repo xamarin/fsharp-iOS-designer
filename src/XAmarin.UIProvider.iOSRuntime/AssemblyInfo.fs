@@ -1,8 +1,8 @@
-﻿namespace Xamarin.UIProviders.DesignTime
+﻿namespace Xamarin.UIProvider.iOSRuntime
 open System.Reflection
 open System.Runtime.CompilerServices
 
-[<assembly: AssemblyTitle("iOSDesignerTypeProvider")>]
+[<assembly: AssemblyTitle("Xamarin.UIProvider.iOSRuntime")>]
 [<assembly: AssemblyDescription("")>]
 [<assembly: AssemblyConfiguration("")>]
 [<assembly: AssemblyCompany("")>]
@@ -18,4 +18,3 @@ open System.Runtime.CompilerServices
 //[<assembly: AssemblyKeyFile("")>]
 
 ()
-
