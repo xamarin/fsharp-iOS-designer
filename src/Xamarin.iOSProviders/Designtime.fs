@@ -29,18 +29,28 @@ module TypeBuilder =
         //create a backing field fand property or the action
 
         let actionAttributeType = runtimeBinding.Assembly.GetType("Foundation.ActionAttribute", true)
+        let nsObj = runtimeBinding.Assembly.GetType("Foundation.NSObject")
+        let callbackUntyped = typedefof<FSharpFunc<_, unit>>
+        let callbackTyped = callbackUntyped.MakeGenericType([|nsObj;typeof<unit>|])
+        let opt = typedefof<Option<_>>
+        let optCallback = opt.MakeGenericType([|callbackTyped|])
+        let reflectiveCast t (e:Expr) =
+            let expr = typeof<Expr>
+            let meth = expr.GetMethod("Cast")
+            let genericMeth = meth.MakeGenericMethod([|t|])
+            genericMeth.Invoke(null, [|e|])
         
         let actionField, actionProperty =
             ProvidedTypes.ProvidedPropertyWithField (Sanitise.makeFieldName action.Selector,
                                                      Sanitise.makePascalCase action.Selector,
-                                                     typeof<option<obj -> unit>>)
+                                                     optCallback)
         let actionBinding =
             ProvidedMethod(methodName = Sanitise.makeSelectorMethodName action.Selector, 
-                           parameters = [ProvidedParameter("sender", typeof<obj>) ], 
+                           parameters = [ProvidedParameter("sender", nsObj) ], 
                            returnType = typeof<Void>, 
                            InvokeCode = fun args ->
-                                            let callback = Expr.FieldGet(args.[0], actionField)
-                                            let arg = args.[1]
+                                            let callback = reflectiveCast optCallback (Expr.FieldGet(args.[0], actionField)) :?> Expr
+                                            let arg = reflectiveCast nsObj args.[1] :?> Expr
                                             <@@ %%callback |> Option.iter (fun f -> f %%arg) @@>)
                                                     
 
@@ -126,8 +136,9 @@ module TypeBuilder =
         providedController.AddMember (mkProvidedLiteralField "CustomClass" customClass)
 
         //actions
-        let actionProvidedMembers = vc.Actions |> List.collect (buildAction bindingType)
-        providedController.AddMembers actionProvidedMembers 
+        //NOTE: Actions are disabled due to quotation casting issues
+        //let actionProvidedMembers = vc.Actions |> List.collect (buildAction bindingType)
+        //providedController.AddMembers actionProvidedMembers 
       
         //outlets
         let providedOutlets =

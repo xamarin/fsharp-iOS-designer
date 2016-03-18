@@ -35,18 +35,30 @@ module Mac =
         let! dest = outlet |> tryGetAttribute "destination"
         let! (destElement : XElement) = tryLookup dest.Value
         let elementName = destElement.Name.LocalName
-        
-        return {Property    = prop.Value
-                ElementName = elementName } }
+        return {Property=prop.Value; ElementName=elementName } }
+                
+    let actionMapping tryLookup action = maybe {
+        let! selector = action |> tryGetAttribute "selector"
+        //<button> <connections> <action/> </connections> </button>
+        let elementName = action.Parent.Parent.Name.LocalName
+        return {Selector=selector.Value; ElementName= elementName}}
                         
     let viewControllerMapping tryLookup (vc:XElement) = maybe {
         let! customClass = vc |> tryGetAttribute "customClass"
+        
         let outlets =
             vc.Elements(xn "connections")
             |> Seq.collect (fun conn -> conn.Elements(xn "outlet"))
             |> Seq.choose (outletMapping tryLookup)
             |> Seq.toList
-        let actions = []
+   
+        let actions =
+            vc.Elements(xn "view")
+            |> Seq.collect(fun view -> view.Elements(xn "subviews"))
+            |> Seq.collect(fun subview -> subview.Descendants(xn "action"))
+            |> Seq.choose (actionMapping tryLookup)
+            |> Seq.toList
+        
         return {XmlType = vc.Name.LocalName
                 CustomClass = customClass.Value
                 Outlets = outlets
