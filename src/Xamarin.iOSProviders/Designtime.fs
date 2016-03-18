@@ -6,9 +6,6 @@ open System.Reflection
 open ProviderImplementation.ProvidedTypes
 open Microsoft.FSharp.Core.CompilerServices
 open Microsoft.FSharp.Quotations
-//open Foundation
-//open UIKit
-open MonoTouch.Design
 open ProvidedTypes
 open ExtCore.Control
 open Swensen.Unquote
@@ -26,54 +23,12 @@ module Sanitise =
         (makePascalCase name) + "Selector"
 
 module TypeBuilder =
-    
-    let getTypeMap (assembly:Assembly) (proxy:ProxiedUiKitObject) =
-        //TODO: Expand this to also search in user assemblies
-        let hasRegisterAttribute (typ:Type) =
-          query {for ca in typ.CustomAttributes do
-                   exists (ca.AttributeType = assembly.GetType("Foundation.RegisterAttribute", true)) }
-
-        let hasMatchingAttributeName (typ:Type) proxyClassName = 
-          query {for ca in typ.CustomAttributes do
-                  exists (match ca.ConstructorArguments |> Seq.map (fun ca -> ca.Value) |> Seq.toList with   
-                          | [:? string as name] -> name = proxyClassName
-                          | [:? string as name; :? bool as _isWrapper] -> name = proxyClassName
-                          | _ -> false) }
-
-//debug
-//        let allTypes =
-//          query { for typ in monotouchAssembly.ExportedTypes do
-//                    where ((hasRegisterAttribute typ))
-//                    select typ } |> Seq.toArray
-//
-
-//        let typeAndCa =
-//          query { for typ in allTypes do
-//                    let cs = typ.CustomAttributes |> Seq.find (fun ca -> ca.AttributeType = typeof<RegisterAttribute> )
-//                    select (typ.Name, cs) } |> Seq.toArray
-//
-//        let justRegister = 
-//          typeAndCa |> Array.map (fun (a,b) -> match b.ConstructorArguments |> Seq.map (fun ca -> ca.Value) |> Seq.toList  with
-//                                      toList         | [:? string as name] -> name
-//                                               | [:? string as name; :? bool as _isWrapper] -> name
-//                                               | _-> "invalid") |> Array.sort
-//
-//        let justType =
-//          typeAndCa |> Array.map (fun (a, b) -> a) |> Array.sort
-
-        //------------------------------
-        let matches =
-          query { for typ in assembly.ExportedTypes do
-                    where ((hasRegisterAttribute typ) && (hasMatchingAttributeName typ proxy.CodeGenerationBaseClass))
-                    select typ
-                    exactlyOne }
-        matches
-
     //TODO add option for ObservableSource<NSObject>, potentially unneeded as outlets exposes this with observable...
-    let buildAction (assembly:Assembly) (action:ActionConnection) =
+    
+    let buildAction (runtimeBinding:RunTime.RunTimeBinding) (action:Xamarin.UIProviders.DesignTime.Action) =
         //create a backing field fand property or the action
 
-        let actionAttributeType = assembly.GetType("Foundation.ActionAttribute", true)
+        let actionAttributeType = runtimeBinding.Assembly.GetType("Foundation.ActionAttribute", true)
         
         let actionField, actionProperty =
             ProvidedTypes.ProvidedPropertyWithField (Sanitise.makeFieldName action.Selector,
@@ -98,13 +53,14 @@ module TypeBuilder =
          actionProperty :> _
          actionBinding  :> _]
 
-    let buildOutlet (assembly:Assembly) (vc:ProxiedViewController, outlet:Outlet) =
-            let uiProxy = vc.Storyboard.FindById (outlet.Destination) :?> ProxiedUiKitObject
+    let buildOutlet (bindingType:RunTime.RunTimeBinding) (vc:ViewController, outlet:Outlet) =
+            //let uiProxy = vc.Storyboard.FindById (outlet.Destination) :?> ProxiedUiKitObject
+            let xmlType = outlet.ElementName
             let outletField, outletProperty =
                 ProvidedTypes.ProvidedPropertyWithField (Sanitise.makeFieldName outlet.Property,
                                                          Sanitise.cleanTrailing outlet.Property,
-                                                         getTypeMap assembly uiProxy)
-            outletProperty.AddCustomAttribute <| CustomAttributeDataExt.Make (assembly.GetType("Foundation.OutletAttribute", true).GetUnitConstructor ())
+                                                         TypeMapper.getTypeMap bindingType xmlType)
+            outletProperty.AddCustomAttribute <| CustomAttributeDataExt.Make (bindingType.Assembly.GetType("Foundation.OutletAttribute", true).GetUnitConstructor ())
 
             //Add the property and backing fields to the view controller
             outletField, outletProperty
@@ -130,10 +86,10 @@ module TypeBuilder =
                                                     else buildReleaseOutletsExpr instance fields
                                     | _ -> invalidOp "Too many arguments")
 
-    let buildController (assembly:Assembly) (vcs: ProxiedViewController seq) isAbstract addUnitCtor register (config:TypeProviderConfig) =
+    let buildController (bindingType: RunTime.RunTimeBinding) (vcs: ViewController seq) isAbstract addUnitCtor register (config:TypeProviderConfig) =
 
         //get the real type of the controller proxy
-        let vcsTypes = vcs |> Seq.map (getTypeMap assembly)
+        let vcsTypes = vcs |> Seq.map (fun vc -> TypeMapper.getTypeMap bindingType vc.XmlType)
         let vc = Seq.head vcs
         let controllerType = Seq.head vcsTypes
         let className = if isAbstract then vc.CustomClass + "Base" else vc.CustomClass
@@ -163,26 +119,14 @@ module TypeBuilder =
 
         //If register set and not isAbstract, then automatically registers using [<Register>]
         if register && not isAbstract then
-            let register = CustomAttributeDataExt.Make (assembly.GetType("Foundation.RegisterAttribute", true).GetConstructor (typeof<string>), [| CustomAttributeTypedArgument (typeof<string>, customClass) |])
+            let register = CustomAttributeDataExt.Make (bindingType.Assembly.GetType("Foundation.RegisterAttribute", true).GetConstructor (typeof<string>), [| CustomAttributeTypedArgument (typeof<string>, customClass) |])
             providedController.AddCustomAttribute (register)
 
         //Add a little helper that has the "CustomClass" available, this can be used to register without knowing the CustomClass
         providedController.AddMember (mkProvidedLiteralField "CustomClass" customClass)
 
         //actions
-        let actionProvidedMembers =
-            [for vc in vcs do
-                match vc.View with
-                | null -> ()
-                | view ->
-                    match view.Subviews with
-                    | null -> ()
-                    | subviews ->
-                        yield! subviews
-                               |> Seq.collect (fun sv -> sv.Actions)
-                               |> Seq.distinct
-                               |> Seq.collect (buildAction assembly)]
-
+        let actionProvidedMembers = vc.Actions |> List.collect (buildAction bindingType)
         providedController.AddMembers actionProvidedMembers 
       
         //outlets
@@ -191,7 +135,7 @@ module TypeBuilder =
                  for outlet in vc.Outlets do
                      yield vc, outlet ]
             |> List.distinctBy (fun (_, outlet) -> outlet.Property)
-            |> List.map (buildOutlet assembly)
+            |> List.map (buildOutlet bindingType)
 
         for (field, property) in providedOutlets do
             providedController.AddMembers [field :> MemberInfo; property :> _]
