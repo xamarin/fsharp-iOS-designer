@@ -8,7 +8,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>SingleViewUniversal</RootNamespace>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
-    <AssemblyName>SingleViewUniversal</AssemblyName>
+    <AssemblyName>cs_cocoa</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhoneSimulator' ">
     <DebugSymbols>true</DebugSymbols>
