@@ -54,6 +54,9 @@
     <Reference Include="Unquote">
       <HintPath>..\packages\Unquote.3.1.1\lib\net45\Unquote.dll</HintPath>
     </Reference>
+    <Reference Include="MonoDevelop.MacDev">
+      <HintPath>..\..\..\md-addins\MonoDevelop.MacDev\build\MonoDevelop.MacDev.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
@@ -63,6 +66,11 @@
     <Compile Include="Observable.fs" />
     <Compile Include="IO.fs" />
     <Compile Include="DebugProvidedTypes.fs" />
+    <Compile Include="RunTimeBindings.fs" />
+    <Compile Include="TypeMapper.fs" />
+    <Compile Include="Model.fs" />
+    <Compile Include="MacParsing.fs" />
+    <Compile Include="IOSParsing.fs" />
     <Compile Include="Designtime.fs" />
     <Compile Include="iOSDesignerProvider.fs" />
   </ItemGroup>
