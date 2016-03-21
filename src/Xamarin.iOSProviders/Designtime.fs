@@ -25,15 +25,19 @@ module Sanitise =
 module TypeBuilder =
     //TODO add option for ObservableSource<NSObject>, potentially unneeded as outlets exposes this with observable...
     
+    let template (callback:Expr<('a -> unit) option>) (arg:Expr<'a>) =
+        <@@ %callback |> Option.iter (fun f -> f %arg) @@>
+        
     let buildAction (runtimeBinding:RunTime.RunTimeBinding) (action:Xamarin.UIProviders.DesignTime.Action) =
         //create a backing field fand property or the action
-
         let actionAttributeType = runtimeBinding.Assembly.GetType("Foundation.ActionAttribute", true)
-        let nsObj = runtimeBinding.Assembly.GetType("Foundation.NSObject")
+        let xmlType = action.ElementName
+        let nsObj = TypeMapper.getTypeMap runtimeBinding xmlType
         let callbackUntyped = typedefof<FSharpFunc<_, unit>>
         let callbackTyped = callbackUntyped.MakeGenericType([|nsObj;typeof<unit>|])
         let opt = typedefof<Option<_>>
         let optCallback = opt.MakeGenericType([|callbackTyped|])
+
         let reflectiveCast t (e:Expr) =
             let expr = typeof<Expr>
             let meth = expr.GetMethod("Cast")
@@ -47,12 +51,15 @@ module TypeBuilder =
         let actionBinding =
             ProvidedMethod(methodName = Sanitise.makeSelectorMethodName action.Selector, 
                            parameters = [ProvidedParameter("sender", nsObj) ], 
-                           returnType = typeof<Void>, 
+                           returnType = typeof<Void>,
                            InvokeCode = fun args ->
-                                            let callback = reflectiveCast optCallback (Expr.FieldGet(args.[0], actionField)) :?> Expr
-                                            let arg = reflectiveCast nsObj args.[1] :?> Expr
-                                            <@@ %%callback |> Option.iter (fun f -> f %%arg) @@>)
-                                                    
+                                            let callback = reflectiveCast optCallback (Expr.FieldGet(args.[0], actionField))
+                                            let arg = reflectiveCast nsObj args.[1]
+                                            let typeBuilder = Type.GetType("Xamarin.UIProviders.DesignTime.TypeBuilder, Xamarin.UIProviders.DesignTime")
+                                            let template = typeBuilder.GetMethod("template")
+                                            let genericTemplate = template.MakeGenericMethod([|nsObj|])
+                                            let quoted = genericTemplate.Invoke(null, [|callback; arg|]) :?> Expr
+                                            quoted)
 
         actionBinding.AddCustomAttribute
             (CustomAttributeDataExt.Make (actionAttributeType.GetConstructor (typeof<string>),
@@ -137,8 +144,8 @@ module TypeBuilder =
 
         //actions
         //NOTE: Actions are disabled due to quotation casting issues
-        //let actionProvidedMembers = vc.Actions |> List.collect (buildAction bindingType)
-        //providedController.AddMembers actionProvidedMembers 
+        let actionProvidedMembers = vc.Actions |> List.collect (buildAction bindingType)
+        providedController.AddMembers actionProvidedMembers 
       
         //outlets
         let providedOutlets =
