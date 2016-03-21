@@ -7,7 +7,7 @@
 		<integer>1</integer>
 	</array>
 	<key>MinimumOSVersion</key>
-	<string>8.0</string>
+	<string>9.2</string>
 	<key>CFBundleVersion</key>
 	<string>1.0</string>
 	<key>CFBundleShortVersionString</key>
@@ -18,5 +18,9 @@
 	<string>com.your-company.fsharp_masterdetail</string>
 	<key>CFBundleDisplayName</key>
 	<string>fsharp_masterdetail</string>
+	<key>CFBundleName</key>
+	<string>fsharp_masterdetail</string>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
 </dict>
 </plist>

@@ -18,7 +18,7 @@
     <ErrorReport>prompt</ErrorReport>
     <Tailcalls>false</Tailcalls>
     <ConsolePause>false</ConsolePause>
-    <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
+    <CodesignEntitlements></CodesignEntitlements>
     <PlatformTarget></PlatformTarget>
     <MtouchDebug>true</MtouchDebug>
     <MtouchLink>None</MtouchLink>
@@ -101,10 +101,10 @@
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
-    <Reference Include="Xamarin.iOSProviders">
-      <HintPath>..\..\..\src\Xamarin.iOSProviders\bin\Debug\Xamarin.iOSProviders.dll</HintPath>
-    </Reference>
     <Reference Include="Xamarin.iOS" />
+    <Reference Include="Xamarin.UIProvider.iOSRuntime">
+      <HintPath>..\..\..\src\Build\Debug\Xamarin.UIProvider.iOSRuntime.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\" />
@@ -120,5 +120,6 @@
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.FSharp.targets" />
   <ItemGroup>
     <InterfaceDefinition Include="MainStoryboard.storyboard" />
+    <InterfaceDefinition Include="LaunchScreen.storyboard" />
   </ItemGroup>
 </Project>

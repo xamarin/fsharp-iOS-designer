@@ -9,7 +9,7 @@ type VCContainer = Xamarin.UIProvider
 
 [<Register (VCContainer.SingleViewUniversalViewControllerBase.CustomClass) >]
 type MyViewController (handle) =
-    inherit VCContainer.SingleViewUniversalViewControllerBase (handle)
+    inherit VCContainer.SingleViewUniversalViewControllerBase (handle) 
 
     override x.DidReceiveMemoryWarning () =
         // Releases the view if it doesn't have a superview.

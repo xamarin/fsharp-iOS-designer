@@ -18,13 +18,11 @@
     <ErrorReport>prompt</ErrorReport>
     <Tailcalls>false</Tailcalls>
     <ConsolePause>false</ConsolePause>
-    <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
-    <PlatformTarget>
-    </PlatformTarget>
+    <CodesignEntitlements></CodesignEntitlements>
+    <PlatformTarget></PlatformTarget>
     <MtouchDebug>true</MtouchDebug>
     <MtouchLink>None</MtouchLink>
-    <MtouchI18n>
-    </MtouchI18n>
+    <MtouchI18n></MtouchI18n>
     <MtouchArch>i386</MtouchArch>
     <CodesignKey>iPhone Developer</CodesignKey>
   </PropertyGroup>
@@ -35,8 +33,7 @@
     <OutputPath>bin\iPhoneSimulator\Release</OutputPath>
     <DefineConstants>__MOBILE__;__IOS__</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
-    <PlatformTarget>
-    </PlatformTarget>
+    <PlatformTarget></PlatformTarget>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
     <ConsolePause>false</ConsolePause>
     <Tailcalls>true</Tailcalls>
@@ -51,12 +48,10 @@
     <Tailcalls>false</Tailcalls>
     <ConsolePause>false</ConsolePause>
     <MtouchDebug>true</MtouchDebug>
-    <PlatformTarget>
-    </PlatformTarget>
+    <PlatformTarget></PlatformTarget>
     <CodesignKey>iPhone Developer</CodesignKey>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
-    <IpaPackageName>
-    </IpaPackageName>
+    <IpaPackageName></IpaPackageName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
     <DebugSymbols>true</DebugSymbols>
@@ -65,8 +60,7 @@
     <OutputPath>bin\iPhone\Release</OutputPath>
     <DefineConstants>__MOBILE__;__IOS__</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
-    <PlatformTarget>
-    </PlatformTarget>
+    <PlatformTarget></PlatformTarget>
     <CodesignKey>iPhone Developer</CodesignKey>
     <ConsolePause>false</ConsolePause>
     <Tailcalls>true</Tailcalls>
@@ -82,8 +76,7 @@
     <Tailcalls>true</Tailcalls>
     <ConsolePause>false</ConsolePause>
     <CodesignKey>iPhone Distribution</CodesignKey>
-    <PlatformTarget>
-    </PlatformTarget>
+    <PlatformTarget></PlatformTarget>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
     <CodesignProvision>Automatic:AdHoc</CodesignProvision>
     <BuildIpa>true</BuildIpa>
@@ -98,8 +91,7 @@
     <Tailcalls>true</Tailcalls>
     <ConsolePause>false</ConsolePause>
     <CodesignKey>iPhone Distribution</CodesignKey>
-    <PlatformTarget>
-    </PlatformTarget>
+    <PlatformTarget></PlatformTarget>
     <CodesignProvision>Automatic:AppStore</CodesignProvision>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
   </PropertyGroup>
@@ -107,10 +99,10 @@
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
-    <Reference Include="Xamarin.iOSProviders">
-      <HintPath>..\..\..\src\Xamarin.iOSProviders\bin\Debug\Xamarin.iOSProviders.dll</HintPath>
-    </Reference>
     <Reference Include="Xamarin.iOS" />
+    <Reference Include="Xamarin.UIProvider.iOSRuntime">
+      <HintPath>..\..\..\src\Build\Debug\Xamarin.UIProvider.iOSRuntime.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\" />

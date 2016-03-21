@@ -11,11 +11,11 @@
                 <application id="hnw-xV-0zn" sceneMemberID="viewController">
                     <menu key="mainMenu" title="Main Menu" systemMenu="main" id="AYu-sK-qS6">
                         <items>
-                            <menuItem title="cocoa_test" id="1Xt-HY-uBw">
+                            <menuItem title="cocoa_cs_test" id="1Xt-HY-uBw">
                                 <modifierMask key="keyEquivalentModifierMask"/>
-                                <menu key="submenu" title="cocoa_test" systemMenu="apple" id="uQy-DD-JDr">
+                                <menu key="submenu" title="cocoa_cs_test" systemMenu="apple" id="uQy-DD-JDr">
                                     <items>
-                                        <menuItem title="About cocoa_test" id="5kV-Vb-QxS">
+                                        <menuItem title="About cocoa_cs_test" id="5kV-Vb-QxS">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <connections>
                                                 <action selector="orderFrontStandardAboutPanel:" target="Ady-hI-5gd" id="Exp-CZ-Vem"/>
@@ -29,7 +29,7 @@
                                             <menu key="submenu" title="Services" systemMenu="services" id="hz9-B4-Xy5"/>
                                         </menuItem>
                                         <menuItem isSeparatorItem="YES" id="4je-JR-u6R"/>
-                                        <menuItem title="Hide cocoa_test" keyEquivalent="h" id="Olw-nP-bQN">
+                                        <menuItem title="Hide cocoa_cs_test" keyEquivalent="h" id="Olw-nP-bQN">
                                             <connections>
                                                 <action selector="hide:" target="Ady-hI-5gd" id="PnN-Uc-m68"/>
                                             </connections>
@@ -47,7 +47,7 @@
                                             </connections>
                                         </menuItem>
                                         <menuItem isSeparatorItem="YES" id="kCx-OE-vgT"/>
-                                        <menuItem title="Quit cocoa_test" keyEquivalent="q" id="4sb-4s-VLi">
+                                        <menuItem title="Quit cocoa_cs_test" keyEquivalent="q" id="4sb-4s-VLi">
                                             <connections>
                                                 <action selector="terminate:" target="Ady-hI-5gd" id="Te7-pn-YzF"/>
                                             </connections>
@@ -506,22 +506,19 @@
                                                                 <menuItem title="Paragraph" enabled="NO" id="ZvO-Gk-QUH">
                                                                     <modifierMask key="keyEquivalentModifierMask"/>
                                                                 </menuItem>
-                                                                <menuItem id="YGs-j5-SAR">
-                                                                    <string key="title">	Default</string>
+                                                                <menuItem title="    Default" id="YGs-j5-SAR">
                                                                     <modifierMask key="keyEquivalentModifierMask"/>
                                                                     <connections>
                                                                         <action selector="makeBaseWritingDirectionNatural:" target="Ady-hI-5gd" id="qtV-5e-UBP"/>
                                                                     </connections>
                                                                 </menuItem>
-                                                                <menuItem id="Lbh-J2-qVU">
-                                                                    <string key="title">	Left to Right</string>
+                                                                <menuItem title="    Left to Right" id="Lbh-J2-qVU">
                                                                     <modifierMask key="keyEquivalentModifierMask"/>
                                                                     <connections>
                                                                         <action selector="makeBaseWritingDirectionLeftToRight:" target="Ady-hI-5gd" id="S0X-9S-QSf"/>
                                                                     </connections>
                                                                 </menuItem>
-                                                                <menuItem id="jFq-tB-4Kx">
-                                                                    <string key="title">	Right to Left</string>
+                                                                <menuItem title="    Right to Left" id="jFq-tB-4Kx">
                                                                     <modifierMask key="keyEquivalentModifierMask"/>
                                                                     <connections>
                                                                         <action selector="makeBaseWritingDirectionRightToLeft:" target="Ady-hI-5gd" id="5fk-qB-AqJ"/>
@@ -531,22 +528,19 @@
                                                                 <menuItem title="Selection" enabled="NO" id="cqv-fj-IhA">
                                                                     <modifierMask key="keyEquivalentModifierMask"/>
                                                                 </menuItem>
-                                                                <menuItem id="Nop-cj-93Q">
-                                                                    <string key="title">	Default</string>
+                                                                <menuItem title="    Default" id="Nop-cj-93Q">
                                                                     <modifierMask key="keyEquivalentModifierMask"/>
                                                                     <connections>
                                                                         <action selector="makeTextWritingDirectionNatural:" target="Ady-hI-5gd" id="lPI-Se-ZHp"/>
                                                                     </connections>
                                                                 </menuItem>
-                                                                <menuItem id="BgM-ve-c93">
-                                                                    <string key="title">	Left to Right</string>
+                                                                <menuItem title="    Left to Right" id="BgM-ve-c93">
                                                                     <modifierMask key="keyEquivalentModifierMask"/>
                                                                     <connections>
                                                                         <action selector="makeTextWritingDirectionLeftToRight:" target="Ady-hI-5gd" id="caW-Bv-w94"/>
                                                                     </connections>
                                                                 </menuItem>
-                                                                <menuItem id="RB4-Sm-HuC">
-                                                                    <string key="title">	Right to Left</string>
+                                                                <menuItem title="    Right to Left" id="RB4-Sm-HuC">
                                                                     <modifierMask key="keyEquivalentModifierMask"/>
                                                                     <connections>
                                                                         <action selector="makeTextWritingDirectionRightToLeft:" target="Ady-hI-5gd" id="EXD-6r-ZUu"/>
@@ -628,7 +622,7 @@
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="Help" systemMenu="help" id="F2S-fz-NVQ">
                                     <items>
-                                        <menuItem title="cocoa_test Help" keyEquivalent="?" id="FKE-Sm-Kum">
+                                        <menuItem title="cocoa_cs_test Help" keyEquivalent="?" id="FKE-Sm-Kum">
                                             <connections>
                                                 <action selector="showHelp:" target="Ady-hI-5gd" id="y7X-2Q-9no"/>
                                             </connections>
@@ -642,7 +636,7 @@
                         <outlet property="delegate" destination="Voe-Tx-rLC" id="PrD-fu-P6m"/>
                     </connections>
                 </application>
-                <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="cocoa_test" customModuleProvider="target"/>
+                <customObject id="Voe-Tx-rLC" customClass="AppDelegate"/>
                 <customObject id="Ady-hI-5gd" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="75" y="0.0"/>
@@ -668,34 +662,34 @@
         <!--View Controller-->
         <scene sceneID="hIz-AP-VOD">
             <objects>
-                <viewController id="XfG-lQ-9wD" customClass="ViewController" customModule="cocoa_test" sceneMemberID="viewController">
+                <viewController id="XfG-lQ-9wD" customClass="ViewController" sceneMemberID="viewController">
                     <view key="view" id="m2S-Jp-Qdl">
                         <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gUI-iA-QN3">
-                                <rect key="frame" x="194" y="253" width="93" height="17"/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="This is my App" id="Mj7-9z-Qet">
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="iLO-pF-979">
+                                <rect key="frame" x="236" y="183" width="37" height="17"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Label" id="34G-Eh-EWV">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gbt-X3-z17">
-                                <rect key="frame" x="179" y="118" width="122" height="32"/>
-                                <buttonCell key="cell" type="push" title="Do not press!" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="nWw-QO-4ab">
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CYB-u2-Pml">
+                                <rect key="frame" x="220" y="89" width="81" height="32"/>
+                                <buttonCell key="cell" type="push" title="Button" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="psC-8Z-mzu">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="onButton:" target="XfG-lQ-9wD" id="6ls-Sw-tNs"/>
+                                    <action selector="onButton:" target="XfG-lQ-9wD" id="iXI-mo-ZXS"/>
                                 </connections>
                             </button>
                         </subviews>
                     </view>
                     <connections>
-                        <outlet property="myButton" destination="gbt-X3-z17" id="KrC-YE-wrD"/>
-                        <outlet property="myLabel" destination="gUI-iA-QN3" id="QDg-cQ-xvK"/>
+                        <outlet property="myButton" destination="CYB-u2-Pml" id="7qL-0b-qpE"/>
+                        <outlet property="myLabel" destination="iLO-pF-979" id="BPp-P6-9WI"/>
                     </connections>
                 </viewController>
                 <customObject id="rPt-NT-nkU" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>

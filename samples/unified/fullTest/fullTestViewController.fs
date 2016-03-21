@@ -3,7 +3,7 @@
 open System
 open UIKit
 open Foundation
-open Xamarin.iOSProviders
+open Xamarin
 
 //view controller is generated from the type provider and embedded into the assembly here
 type VCContainer = UIProvider
@@ -15,10 +15,10 @@ type MyViewController (handle) =
     //Overrides are implemented on the derived type   
     override x.ViewDidLoad() =
         //Access to the outlets are available
-        x.MyButton.TouchDown.Add (fun _ -> x.View.BackgroundColor <- UIColor.Purple)
-
+        x.myButton.TouchDown.Add (fun _ -> x.View.BackgroundColor <- UIColor.Purple)
+        
         //Access to actions are available 
-        x.Mytouchup <- fun _ -> x.View.BackgroundColor <- UIColor.Yellow
+        x.Mytouchup <- Some(fun _ -> x.View.BackgroundColor <- UIColor.Yellow)
 
     override x.ShouldAutorotateToInterfaceOrientation (orientation) = 
         orientation <> UIInterfaceOrientation.PortraitUpsideDown

@@ -7,14 +7,17 @@ type Container = Xamarin.UIProvider
 
 [<Register(Container.ViewControllerBase.CustomClass)>] 
 type myViewController(handle) =
-    inherit Container.ViewControllerBase(handle) 
+    inherit Container.ViewControllerBase(handle)
     
-        override x.ViewDidLoad () =
-            base.ViewDidLoad ()
-            // Do any additional setup after loading the view.
-            //x.OnButton <- Some(fun _ -> x.View.Layer.BackgroundColor <- new CoreGraphics.CGColor("purple"))
+    let onButton button =
+        printfn "Button pressed"
+            
+    override x.ViewDidLoad () =
+        base.ViewDidLoad ()
+        // Do any additional setup after loading the view.
+        x.OnButton <- Some(fun _ -> x.View.Window.BackgroundColor <- AppKit.NSColor.Red)
 
-        override x.RepresentedObject
-            // Update the view, if already loaded.
-            with get() = base.RepresentedObject
-            and set(v) = base.RepresentedObject <- v
+    override x.RepresentedObject
+        // Update the view, if already loaded.
+        with get() = base.RepresentedObject
+        and set(v) = base.RepresentedObject <- v

@@ -6,7 +6,7 @@
     <ProjectTypeGuids>{A3F8F2AB-B479-4A4A-A458-A89E7DC349F1};{F2A71F9B-5D33-465A-A702-920D77279786}</ProjectTypeGuids>
     <OutputType>Exe</OutputType>
     <RootNamespace>CocoaApp</RootNamespace>
-    <AssemblyName>CocoaApp</AssemblyName>
+    <AssemblyName>cocoa_cs_test</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <TargetFrameworkIdentifier>Xamarin.Mac</TargetFrameworkIdentifier>
     <MonoMacResourcePrefix>Resources</MonoMacResourcePrefix>

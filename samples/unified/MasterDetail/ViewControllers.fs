@@ -3,7 +3,7 @@
 open System
 open UIKit
 open Foundation
-open Xamarin.iOSProviders
+open Xamarin
 
 //view controllers are generated from the type provider and embedded into the assembly here
 type Container = UIProvider
@@ -39,15 +39,7 @@ type DataSource (controller:UITableViewController) =
         | UITableViewCellEditingStyle.Insert -> ()
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
         | _ -> ()
-
-// Override to support rearranging the table view.
-//    override x.MoveRow (tableView, sourceIndexPath, destinationIndexPath) = ()
-
-// Override to support conditional rearranging of the table view.
-//    override x.CanMoveRow (tableView, indexPath) =     
-//        // Return false if you do not want the item to be re-orderable.
-//        true
-  
+ 
 [<Register (Container.DetailViewControllerBase.CustomClass)>]
 type DetailViewController (handle) =
     inherit Container.DetailViewControllerBase (handle)
@@ -62,7 +54,8 @@ type DetailViewController (handle) =
     member x.ConfigureView () =
         // Update the user interface for the detail item
         if x.IsViewLoaded && detailItem <> null then
-            x.DetailDescriptionLabel.Text <- detailItem.ToString ()
+            x.detailDescriptionLabel.Text <- detailItem.ToString ()
+            
         
     override x.DidReceiveMemoryWarning () =
         // Releases the view if it doesn't have a superview.

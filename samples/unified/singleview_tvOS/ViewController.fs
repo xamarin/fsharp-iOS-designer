@@ -6,7 +6,7 @@ open UIKit
 
 type container = Xamarin.UIProvider 
 
-[<Register(container.myViewControllerBase.CustomClass)>]
+[<Register(container.myViewControllerBase.CustomClass)>] 
 type ViewController(handle : IntPtr) =  
     inherit container.myViewControllerBase(handle)
 
