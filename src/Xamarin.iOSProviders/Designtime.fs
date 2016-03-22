@@ -143,7 +143,6 @@ module TypeBuilder =
         providedController.AddMember (mkProvidedLiteralField "CustomClass" customClass)
 
         //actions
-        //NOTE: Actions are disabled due to quotation casting issues
         let actionProvidedMembers = vc.Actions |> List.collect (buildAction bindingType)
         providedController.AddMembers actionProvidedMembers 
       
