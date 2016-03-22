@@ -71,16 +71,15 @@ module TypeBuilder =
          actionBinding  :> _]
 
     let buildOutlet (bindingType:RunTime.RunTimeBinding) (vc:ViewController, outlet:Outlet) =
-            //let uiProxy = vc.Storyboard.FindById (outlet.Destination) :?> ProxiedUiKitObject
-            let xmlType = outlet.ElementName
-            let outletField, outletProperty =
-                ProvidedTypes.ProvidedPropertyWithField (Sanitise.makeFieldName outlet.Property,
-                                                         Sanitise.cleanTrailing outlet.Property,
-                                                         TypeMapper.getTypeMap bindingType xmlType)
-            outletProperty.AddCustomAttribute <| CustomAttributeDataExt.Make (bindingType.Assembly.GetType("Foundation.OutletAttribute", true).GetUnitConstructor ())
+        let xmlType = outlet.ElementName
+        let outletField, outletProperty =
+            ProvidedTypes.ProvidedPropertyWithField (Sanitise.makeFieldName outlet.Property,
+                                                     Sanitise.cleanTrailing outlet.Property,
+                                                     TypeMapper.getTypeMap bindingType xmlType)
+        outletProperty.AddCustomAttribute <| CustomAttributeDataExt.Make (bindingType.Assembly.GetType("Foundation.OutletAttribute", true).GetUnitConstructor ())
 
-            //Add the property and backing fields to the view controller
-            outletField, outletProperty
+        //Add the property and backing fields to the view controller
+        outletField, outletProperty
     
     //takes an instance returns a disposal expresion
     let buildDisposalExpr instance outletField =
