@@ -162,15 +162,4 @@ module TypeBuilder =
 
         //add outlet release                                                                       
         providedController.AddMember releaseOutletsMethod
-
         providedController
-
-    // add InitialViewController to container as property, only the root controller should have this
-//    let buildInitialController providedController (designerFile:Uri) = 
-//        let storyboardName = designerFile.AbsolutePath |> Path.GetFileNameWithoutExtension
-//        ProvidedMethod("CreateInitialViewController", [], providedController,
-//                       IsStaticMethod = true,
-//                       InvokeCode = fun _ -> let viewController = 
-//                                                <@@ let mainStoryboard = UIStoryboard.FromName (storyboardName, null)
-//                                                    mainStoryboard.InstantiateInitialViewController () @@>
-//                                             Expr.Coerce (viewController, providedController) )
