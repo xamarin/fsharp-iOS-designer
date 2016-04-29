@@ -1,0 +1,62 @@
+﻿<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{BDF5D89F-10DD-4232-9C5D-D1488FC3EDF8}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Xamarin.Android.UIProvider</RootNamespace>
+    <AssemblyName>Xamarin.Android.UIProvider</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\bin\Debug</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <ConsolePause>false</ConsolePause>
+    <AndroidLinkMode>None</AndroidLinkMode>
+    <PlatformTarget></PlatformTarget>
+    <CustomCommands>
+      <CustomCommands>
+        <Command type="Execute" command="/Users/dave/code/xamarin/monodevelop/main/build/bin/MonoDevelop.exe --no-redirect" workingdir="/Users/dave/code/xamarin/monodevelop/main/build/bin/" />
+      </CustomCommands>
+    </CustomCommands>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Optimize>true</Optimize>
+    <OutputPath>..\bin\Release</OutputPath>
+    <DefineConstants></DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <ConsolePause>false</ConsolePause>
+    <GenerateTailCalls>true</GenerateTailCalls>
+    <PlatformTarget></PlatformTarget>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System.Core" />
+    <Reference Include="Mono.Android">
+      <HintPath>\Library\Frameworks\Xamarin.Android.framework\Versions\Current\lib\xbuild-frameworks\MonoAndroid\v5.0\Mono.Android.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="Java.Interop">
+      <HintPath>..\..\..\..\..\Library\Frameworks\Xamarin.Android.framework\Versions\6.1.99-76\lib\xbuild-frameworks\MonoAndroid\v1.0\Java.Interop.dll</HintPath>
+    </Reference>
+    <Reference Include="ExtCore">
+      <HintPath>..\packages\ExtCore.0.8.45\lib\net45\ExtCore.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ProvidedTypes.fsi" />
+    <Compile Include="ProvidedTypes.fs" />
+    <Compile Include="DebugProvidedTypes.fs" />
+    <Compile Include="ResourceGeneration.fs" />
+    <Compile Include="Provider.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
+</Project>
