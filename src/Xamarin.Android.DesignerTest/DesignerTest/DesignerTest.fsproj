@@ -51,7 +51,7 @@
       <HintPath>..\..\..\..\..\..\Library\Frameworks\Xamarin.Android.framework\Versions\6.1.99-76\lib\xbuild-frameworks\MonoAndroid\v1.0\Facades\System.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="Xamarin.Android.UIProvider.Runtime">
-      <HintPath>..\..\bin\Debug\Xamarin.Android.UIProvider.Runtime.dll</HintPath>
+      <HintPath>..\..\Build\Debug\Xamarin.Android.UIProvider.Runtime.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
