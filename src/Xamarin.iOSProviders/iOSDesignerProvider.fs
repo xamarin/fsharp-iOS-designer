@@ -81,6 +81,3 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
         
         this.AddNamespace(ns, [rootType])
         this.Disposing.Add (fun _ -> for disposer in watchedFiles do disposer.Dispose ())
-
-//[<assembly:TypeProviderAssembly()>] 
-//do()
