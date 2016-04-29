@@ -23,10 +23,10 @@ namespace DesignerTest
     #nowarn "51" // address-of operator can occur in the code
     #nowarn "1183" // unused 'this' reference
     
-    exception ReturnException631d866fb09947dcabbec7f9fe5c92c0 of obj
-    exception ReturnNoneException631d866fb09947dcabbec7f9fe5c92c0
+    exception ReturnException82326c8311b04c59a9ca73ac5fee23a7 of obj
+    exception ReturnNoneException82326c8311b04c59a9ca73ac5fee23a7
     [<AutoOpen>]
-    module FuncConvertFinalOverload631d866fb09947dcabbec7f9fe5c92c0 =
+    module FuncConvertFinalOverload82326c8311b04c59a9ca73ac5fee23a7 =
       // This extension member adds to the FuncConvert type and is the last resort member in the method overloading rules. 
       type global.Microsoft.FSharp.Core.FuncConvert with
           /// A utility function to convert function values from tupled to curried form
