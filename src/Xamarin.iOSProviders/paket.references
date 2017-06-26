@@ -1,7 +1,5 @@
 ExtCore
-FSharp.TypeProviders.StarterPack
 Unquote
 
 File:ProvidedTypes.fsi
 File:ProvidedTypes.fs
-

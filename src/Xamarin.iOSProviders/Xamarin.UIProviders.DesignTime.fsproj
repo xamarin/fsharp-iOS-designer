@@ -71,18 +71,9 @@
       <Link>paket-files/ProvidedTypes.fs</Link>
     </Compile>
     <Compile Include="AssemblyInfo.fs" />
-    <Compile Include="ProvidedTypes.fsi">
-      <Paket>True</Paket>
-    </Compile>
-    <Compile Include="ProvidedTypes.fs">
-      <Paket>True</Paket>
-    </Compile>
     <Compile Include="ProvidedTypesHelpers.fs" />
     <Compile Include="Observable.fs" />
     <Compile Include="IO.fs" />
-    <Compile Include="DebugProvidedTypes.fs">
-      <Paket>True</Paket>
-    </Compile>
     <Compile Include="RunTimeBindings.fs" />
     <Compile Include="TypeMapper.fs" />
     <Compile Include="Model.fs" />
