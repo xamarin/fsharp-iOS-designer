@@ -49,6 +49,10 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
             query {for scene in scenes do
                        groupValBy scene.ViewController scene.ViewController.CustomClass}
 
+        let groupedViews =
+            query {for scene in scenes do
+                       groupValBy scene.View scene.View.CustomClass}
+
 
         //generate storyboard container
         let container = ProvidedTypeDefinition(asm, ns, typeName, Some(typeof<obj>), IsErased=false)
@@ -56,7 +60,11 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
         let generatedTypes =
             [ for sc in groupedViewControllers do
                   let viewControllers = sc.AsEnumerable()
-                  yield TypeBuilder.buildController runtimeBinding viewControllers isAbstract addUnitCtor register config ]
+                  yield TypeBuilder.buildController runtimeBinding viewControllers isAbstract addUnitCtor register config
+
+              for v in groupedViews do
+                  let views = v.AsEnumerable()
+                  () ]
         
         //Add the types to the container
         container.AddMembers generatedTypes

@@ -25,4 +25,4 @@ type View = {
                        
 type Scene = {
     ViewController : ViewController
-    View : View list }
+    View : View }
