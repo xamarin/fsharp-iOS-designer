@@ -1,20 +1,17 @@
 ﻿namespace Xamarin.UIProvider.OSXRuntime
 open System.Reflection
+open Microsoft.FSharp.Core.CompilerServices
 open System.Runtime.CompilerServices
 
 [<assembly: AssemblyTitle("Xamarin.UIProvider.OSXRuntime")>]
 [<assembly: AssemblyDescription("")>]
 [<assembly: AssemblyConfiguration("")>]
-[<assembly: AssemblyCompany("")>]
+[<assembly: AssemblyCompany("Xamarin")>]
 [<assembly: AssemblyProduct("")>]
-[<assembly: AssemblyCopyright("dave")>]
+[<assembly: AssemblyCopyright("2017")>]
 [<assembly: AssemblyTrademark("")>]
-
-// The assembly version has the format {Major}.{Minor}.{Build}.{Revision}
-
 [<assembly: AssemblyVersion("1.0.0.0")>]
-
+[<assembly:TypeProviderAssembly("Xamarin.UIProviders.DesignTime")>]
 //[<assembly: AssemblyDelaySign(false)>]
 //[<assembly: AssemblyKeyFile("")>]
-
 ()
