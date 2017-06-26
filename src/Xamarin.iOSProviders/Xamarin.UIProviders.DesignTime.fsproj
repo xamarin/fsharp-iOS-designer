@@ -16,11 +16,6 @@
     <ErrorReport>prompt</ErrorReport>
     <PlatformTarget></PlatformTarget>
     <Externalconsole>true</Externalconsole>
-    <CustomCommands>
-      <CustomCommands>
-        <Command type="Execute" command="../../../monodevelop/main/build/bin/MonoDevelop.exe --no-redirect" workingdir="../../../monodevelop/main/build/" />
-      </CustomCommands>
-    </CustomCommands>
     <Optimize>false</Optimize>
     <Tailcalls>false</Tailcalls>
   </PropertyGroup>
@@ -35,6 +30,13 @@
     <Tailcalls>true</Tailcalls>
     <DefineConstants></DefineConstants>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'Default' ">
+    <StartAction>Program</StartAction>
+    <StartProgram>..\..\..\..\..\..\Applications\Visual Studio.app\Contents\Resources\lib\monodevelop\bin\VisualStudio.exe</StartProgram>
+    <StartArguments>--no-redirect</StartArguments>
+    <StartWorkingDirectory>..\..\..\..\..\..\Applications\Visual Studio.app\Contents\Resources\lib\monodevelop\bin\</StartWorkingDirectory>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -42,10 +44,10 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="MonoTouch.Design">
-      <HintPath>\Applications\Xamarin Studio.app\Contents\Resources\lib\monodevelop\AddIns\MonoDevelop.IPhone\MonoTouch.Design.dll</HintPath>
+      <HintPath>/Applications/Visual Studio.app/Contents/Resources/lib/monodevelop/AddIns/MonoDevelop.IPhone/MonoTouch.Design.dll</HintPath>
     </Reference>
     <Reference Include="MonoTouch.Design.Client">
-      <HintPath>\Applications\Xamarin Studio.app\Contents\Resources\lib\monodevelop\AddIns\MonoDevelop.IPhone\MonoTouch.Design.Client.dll</HintPath>
+      <HintPath>/Applications/Visual Studio.app/Contents/Resources/lib/monodevelop/AddIns/MonoDevelop.IPhone/MonoTouch.Design.Client.dll</HintPath>
     </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="ExtCore">
@@ -55,9 +57,13 @@
       <HintPath>..\packages\Unquote.3.1.1\lib\net45\Unquote.dll</HintPath>
     </Reference>
     <Reference Include="MonoDevelop.MacDev">
-      <HintPath>..\..\..\md-addins\MonoDevelop.MacDev\build\MonoDevelop.MacDev.dll</HintPath>
+      <HintPath>/Applications/Visual Studio.app/Contents/Resources/lib/monodevelop/AddIns/MonoDevelop.MacDev/MonoDevelop.MacDev.dll</HintPath>
+    </Reference>
+    <Reference Include="Xamarin.Designer">
+      <HintPath>..\..\..\..\..\..\Applications\Visual Studio.app\Contents\Resources\lib\monodevelop\AddIns\Xamarin.Ide\Xamarin.Designer.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="ProvidedTypes.fsi" />
@@ -73,9 +79,6 @@
     <Compile Include="IOSParsing.fs" />
     <Compile Include="Designtime.fs" />
     <Compile Include="iOSDesignerProvider.fs" />
-  </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
-  <ItemGroup>
     <None Include="packages.config" />
     <None Include="Script.fsx" />
     <None Include="Debug.fs" />

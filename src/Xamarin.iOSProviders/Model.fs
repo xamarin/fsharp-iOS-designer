@@ -17,6 +17,12 @@ type ViewController = {
     CustomClass : string
     Outlets: Outlet List
     Actions: Action List}
+
+type View = {
+    XmlType: string
+    CustomClass : string
+    Outlets: Outlet List}
                        
 type Scene = {
-    ViewController : ViewController }
+    ViewController : ViewController
+    View : View list }

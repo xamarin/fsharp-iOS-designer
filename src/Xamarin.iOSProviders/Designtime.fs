@@ -1,14 +1,11 @@
 ﻿namespace Xamarin.UIProviders.DesignTime
 
 open System
-open System.IO
 open System.Reflection
 open ProviderImplementation.ProvidedTypes
 open Microsoft.FSharp.Core.CompilerServices
 open Microsoft.FSharp.Quotations
 open ProvidedTypes
-open ExtCore.Control
-open Swensen.Unquote
 
 module Sanitise =
     let cleanTrailing = String.trimEnd [|':'|]

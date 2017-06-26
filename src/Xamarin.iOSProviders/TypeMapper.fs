@@ -1,9 +1,6 @@
 ﻿namespace Xamarin.UIProviders.DesignTime
 open System
 open System.Reflection
-open System.IO
-open System.Xml
-open System.Xml.Linq
 
 module internal MacMappings =
     let rawmap =

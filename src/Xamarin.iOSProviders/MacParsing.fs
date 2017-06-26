@@ -70,7 +70,7 @@ module Mac =
         |> Seq.collect (fun scene -> let vcElement = scene.Descendants(xn "viewController")
                                      vcElement
                                      |> Seq.choose (viewControllerMapping tryLookup)
-                                     |> Seq.map (fun vc -> {ViewController=vc}))
+                                     |> Seq.map (fun vc -> {ViewControllers=vc}))
                                      
     let scenesFromStoryBoardFileName (sb:string) =
         let xdoc = XDocument.Load(new StreamReader(sb, true))
