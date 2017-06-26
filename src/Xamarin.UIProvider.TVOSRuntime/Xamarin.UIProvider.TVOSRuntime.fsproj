@@ -32,7 +32,6 @@
 
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
-    <Compile Include="Component1.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
