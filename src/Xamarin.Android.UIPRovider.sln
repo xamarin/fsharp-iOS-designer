@@ -1,6 +1,11 @@
 
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{8076FAE0-3716-40F3-97DD-279AE3BC3226}"
+	ProjectSection(SolutionItems) = preProject
+		..\paket.dependencies = ..\paket.dependencies
+	EndProjectSection
+EndProject
 Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "Xamarin.Android.UIPRovider", "Xamarin.Android.UIPRovider\Xamarin.Android.UIPRovider.fsproj", "{BDF5D89F-10DD-4232-9C5D-D1488FC3EDF8}"
 EndProject
 Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "Xamarin.Android.UIProvider.Runtime", "Xamarin.Android.UIProvider.Runtime\Xamarin.Android.UIProvider.Runtime.fsproj", "{3AAE14BD-F10D-44C0-A09C-685C95B52646}"

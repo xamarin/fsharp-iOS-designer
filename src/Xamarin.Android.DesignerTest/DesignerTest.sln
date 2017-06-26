@@ -1,6 +1,11 @@
 
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{3E91C654-B9C4-4920-8C70-9E6254AB131D}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\paket.dependencies = ..\..\paket.dependencies
+	EndProjectSection
+EndProject
 Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "DesignerTest", "DesignerTest\DesignerTest.fsproj", "{444D009C-7FF9-41A9-B92E-697A001F85C4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs_test", "cs_test\cs_test.csproj", "{22BC1B43-F146-466A-8116-9972A2420EC4}"

@@ -34,6 +34,7 @@ type internal ExpectedStackState =
 
 [<AutoOpen>]
 module internal Misc =
+
     let TypeBuilderInstantiationType = 
         let runningOnMono = try System.Type.GetType("Mono.Runtime") <> null with e -> false 
         let typeName = if runningOnMono then "System.Reflection.MonoGenericClass" else "System.Reflection.Emit.TypeBuilderInstantiation"
@@ -934,7 +935,6 @@ type ProvidedField(fieldName:string,fieldType:Type) =
     member __.AddObsoleteAttribute (message,?isError)     = customAttributesImpl.AddObsolete (message,defaultArg isError false)
     member __.AddDefinitionLocation(line,column,filePath) = customAttributesImpl.AddDefinitionLocation(line, column, filePath)
     member __.GetCustomAttributesDataImpl() = customAttributesImpl.GetCustomAttributesData()
-    member __.AddCustomAttribute attribute                = customAttributesImpl.AddCustomAttribute attribute
 #if FX_NO_CUSTOMATTRIBUTEDATA
 #else
     override __.GetCustomAttributesData()                 = customAttributesImpl.GetCustomAttributesData()
@@ -2175,10 +2175,7 @@ type AssemblyGenerator(assemblyFileName) =
                         match field with
                         | :? ProvidedLiteralField as plf when plf.DeclaringType.IsEnum ->
                             if expectedState <> ExpectedStackState.Empty then
-                                let fieldType = 
-                                    if plf.DeclaringType.IsEnum then field.FieldType.GetEnumUnderlyingType()
-                                    else field.FieldType
-                                emit expectedState (Quotations.Expr.Value(field.GetRawConstantValue(), fieldType))
+                                emit expectedState (Quotations.Expr.Value(field.GetRawConstantValue(), field.FieldType.GetEnumUnderlyingType()))
                         | _ ->
                         match objOpt with 
                         | None -> () 
@@ -2188,7 +2185,6 @@ type AssemblyGenerator(assemblyFileName) =
                         let field = 
                             match field with 
                             | :? ProvidedField as pf when fieldMap.ContainsKey pf -> fieldMap.[pf] :> FieldInfo 
-                            | :? ProvidedLiteralField as plf when fieldMap.ContainsKey plf -> fieldMap.[plf] :> FieldInfo
                             | m -> m
                         if field.IsStatic then 
                             ilg.Emit(OpCodes.Ldsfld, field)
@@ -2373,9 +2369,6 @@ type AssemblyGenerator(assemblyFileName) =
                     | Quotations.Patterns.Lambda(v, body) ->
                         emitLambda(ilg, v, body, expr.GetFreeVars(), locals, parameterVars)
                         popIfEmptyExpected expectedState
-                    | Quotations.Patterns.DefaultValue(typ) as n ->
-                        if typ.IsClass then ilg.Emit(OpCodes.Ldnull)
-                        else failwith (sprintf "unknown expression '%A' in generated method" n)
                     | n -> 
                         failwith (sprintf "unknown expression '%A' in generated method" n)
                 emit expectedState expr
