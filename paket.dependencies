@@ -6,3 +6,6 @@ nuget Unquote 3.1.1
 nuget Xamarin.Android.Support.v4 23.1.1.0 restriction: >= monoandroid6.0
 nuget Xamarin.Android.Support.v7.AppCompat 23.1.1.0 restriction: >= monoandroid6.0
 nuget Xamarin.TestCloud.Agent 0.14.1 restriction: >= xamarinios
+
+github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypes.fsi
+github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypes.fs
