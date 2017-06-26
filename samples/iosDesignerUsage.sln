@@ -1,6 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{EA864239-4932-4E63-A509-A88427DEE871}"
+	ProjectSection(SolutionItems) = preProject
+		..\paket.dependencies = ..\paket.dependencies
+	EndProjectSection
+EndProject
 Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "SingleViewUniversal", "unified\SingleViewUniversal\SingleViewUniversal.fsproj", "{4A95C0B9-1453-47C0-B6A1-FEE6122BD11A}"
 EndProject
 Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "singleview_tvOS", "unified\singleview_tvOS\singleview_tvOS.fsproj", "{00BF2AD3-867C-4A12-8AE6-907D4F02380F}"

@@ -8,7 +8,6 @@ open System.Xml.Linq
 open System.Reflection
 open ProviderImplementation.ProvidedTypes
 open Microsoft.FSharp.Core.CompilerServices
-open MonoTouch.Design
 open ProvidedTypes
 
 [<TypeProvider>] 
@@ -46,10 +45,13 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
                         | RunTime.TVOS -> IOS.scenesFromXDoc xdoc
                     yield! scenes }
 
-        let groupedViewControllers = 
+        let groupedViewControllers =
             query {for scene in scenes do
-                       where (not (String.IsNullOrWhiteSpace scene.ViewController.CustomClass))
                        groupValBy scene.ViewController scene.ViewController.CustomClass}
+
+        let groupedViews =
+            query {for scene in scenes do
+                       groupValBy scene.View scene.View.CustomClass}
 
 
         //generate storyboard container
@@ -57,9 +59,12 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
 
         let generatedTypes =
             [ for sc in groupedViewControllers do
-                  let vcs = sc.AsEnumerable()
-//                  if not (String.IsNullOrWhiteSpace sc.ViewController.CustomClass) then
-                  yield TypeBuilder.buildController runtimeBinding vcs isAbstract addUnitCtor register config ]
+                  let viewControllers = sc.AsEnumerable()
+                  yield TypeBuilder.buildController runtimeBinding viewControllers isAbstract addUnitCtor register config
+
+              for v in groupedViews do
+                  let views = v.AsEnumerable()
+                  () ]
         
         //Add the types to the container
         container.AddMembers generatedTypes

@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -17,7 +17,8 @@
     <ErrorReport>prompt</ErrorReport>
     <ConsolePause>false</ConsolePause>
     <AndroidLinkMode>None</AndroidLinkMode>
-    <PlatformTarget></PlatformTarget>
+    <PlatformTarget>
+    </PlatformTarget>
     <CustomCommands>
       <CustomCommands>
         <Command type="Execute" command="/Users/dave/code/xamarin/monodevelop/main/build/bin/MonoDevelop.exe --no-redirect" workingdir="/Users/dave/code/xamarin/monodevelop/main/build/bin/" />
@@ -27,11 +28,13 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>true</Optimize>
     <OutputPath>..\build\Release</OutputPath>
-    <DefineConstants></DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <ConsolePause>false</ConsolePause>
     <GenerateTailCalls>true</GenerateTailCalls>
-    <PlatformTarget></PlatformTarget>
+    <PlatformTarget>
+    </PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System.Core" />
@@ -44,19 +47,33 @@
     <Reference Include="Java.Interop">
       <HintPath>..\..\..\..\..\Library\Frameworks\Xamarin.Android.framework\Versions\6.1.99-76\lib\xbuild-frameworks\MonoAndroid\v1.0\Java.Interop.dll</HintPath>
     </Reference>
-    <Reference Include="ExtCore">
-      <HintPath>..\packages\ExtCore.0.8.45\lib\net45\ExtCore.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ProvidedTypes.fsi" />
-    <Compile Include="ProvidedTypes.fs" />
-    <Compile Include="DebugProvidedTypes.fs" />
+    <Compile Include="ProvidedTypes.fsi">
+      <Paket>True</Paket>
+    </Compile>
+    <Compile Include="ProvidedTypes.fs">
+      <Paket>True</Paket>
+    </Compile>
+    <Compile Include="DebugProvidedTypes.fs">
+      <Paket>True</Paket>
+    </Compile>
     <Compile Include="ResourceGeneration.fs" />
     <Compile Include="Provider.fs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="paket.references" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6' Or $(TargetFrameworkVersion) == 'v4.6.1' Or $(TargetFrameworkVersion) == 'v4.6.2' Or $(TargetFrameworkVersion) == 'v4.6.3' Or $(TargetFrameworkVersion) == 'v4.7')">
+      <ItemGroup>
+        <Reference Include="ExtCore">
+          <HintPath>..\..\packages\ExtCore\lib\net45\ExtCore.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
 </Project>

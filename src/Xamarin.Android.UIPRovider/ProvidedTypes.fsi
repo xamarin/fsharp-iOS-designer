@@ -225,9 +225,6 @@ type ProvidedField =
     member AddDefinitionLocation : line:int * column:int * filePath:string -> unit
 
     member SetFieldAttributes : attributes : FieldAttributes -> unit
-    
-    /// Add a custom attribute to the provided property definition.
-    member AddCustomAttribute : CustomAttributeData -> unit
 
 /// Represents the type constructor in a provided symbol type.
 [<NoComparison>]
