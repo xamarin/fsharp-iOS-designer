@@ -75,8 +75,8 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
 
               for views in groupedViews do
                   let _customClass, views = views
-                  let settings = {IsAbstract = false
-                                  AddUnitCtor = false
+                  let settings = {IsAbstract = false 
+                                  AddUnitCtor = true
                                   Register = true
                                   BindingType = runtimeBinding
                                   GenerationType = Generated.Views views }
