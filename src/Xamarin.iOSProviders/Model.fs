@@ -11,18 +11,19 @@ type Outlet = {
 type Action = {
     Selector:string
     ElementName: string }
-               
-type ViewController = {
-    XmlType: string
-    CustomClass : string
-    Outlets: Outlet List
-    Actions: Action List}
 
 type View = {
     XmlType: string
     CustomClass : string
-    Outlets: Outlet List}
-                       
+    Outlets: Outlet list
+    SubViews : View list}
+               
+type ViewController = {
+    XmlType: string
+    CustomClass : string
+    Outlets: Outlet list
+    Actions: Action list
+    View : View option}
+
 type Scene = {
-    ViewController : ViewController
-    View : View }
+    ViewController : ViewController }

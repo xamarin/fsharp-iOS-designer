@@ -62,7 +62,8 @@ module Mac =
         return {XmlType = vc.Name.LocalName
                 CustomClass = customClass.Value
                 Outlets = outlets
-                Actions = actions} }
+                Actions = actions
+                View = None } }
     
     let scenesFromXDoc (xdoc:XDocument) =
         let tryLookup = createIdLookup xdoc
@@ -70,8 +71,7 @@ module Mac =
         |> Seq.collect (fun scene -> let vcElement = scene.Descendants(xn "viewController")
                                      vcElement
                                      |> Seq.choose (viewControllerMapping tryLookup)
-                                     |> Seq.map (fun vc -> {ViewController=vc
-                                                            View=[]}))
+                                     |> Seq.map (fun vc -> {ViewController=vc}))
                                      
     let scenesFromStoryBoardFileName (sb:string) =
         let xdoc = XDocument.Load(new StreamReader(sb, true))
