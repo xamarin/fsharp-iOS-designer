@@ -74,7 +74,7 @@ module TypeBuilder =
          actionProperty :> _
          actionBinding  :> _]
 
-    let buildOutlet (bindingType:RunTime.RunTimeBinding) (_c, outlet:Outlet) =
+    let buildOutlet (bindingType:RunTime.RunTimeBinding) (outlet:Outlet) =
         let xmlType = outlet.ElementName
         let outletField, outletProperty =
             ProvidedTypes.ProvidedPropertyWithField (Sanitise.makeFieldName outlet.Property,
@@ -174,15 +174,15 @@ module TypeBuilder =
             | Generated.ViewControllers vcs ->
                 [for vc in vcs do
                      for outlet in vc.Outlets do
-                         yield vc, outlet ]
-                |> List.distinctBy (fun (_, outlet) -> outlet.Property)
+                         yield outlet ]
+                |> List.distinctBy (fun outlet -> outlet.Property)
                 |> List.map (buildOutlet settings.BindingType)
 
             | Generated.Views views ->
                 [for view in views do
                      for outlet in view.Outlets do
-                         yield view, outlet ]
-                |> List.distinctBy (fun (_, outlet) -> outlet.Property)
+                         yield outlet ]
+                |> List.distinctBy (fun outlet -> outlet.Property)
                 |> List.map (buildOutlet settings.BindingType)
 
         for (field, property) in providedOutlets do
