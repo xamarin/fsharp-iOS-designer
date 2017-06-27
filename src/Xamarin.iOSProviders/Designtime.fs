@@ -152,13 +152,15 @@ module TypeBuilder =
 
         //If register set and not isAbstract, then automatically registers using [<Register>]
         if settings.Register && not settings.IsAbstract then
-            let register = CustomAttributeDataExt.Make (settings.BindingType.Assembly.GetType("Foundation.RegisterAttribute", true).GetConstructor (typeof<string>), [| CustomAttributeTypedArgument (typeof<string>, customClass) |])
+            let register =
+               let registerAttribute = settings.BindingType.Assembly.GetType("Foundation.RegisterAttribute", true)
+               CustomAttributeDataExt.Make (registerAttribute.GetConstructor (typeof<string>), [| CustomAttributeTypedArgument (typeof<string>, customClass) |])
             providedController.AddCustomAttribute (register)
 
         //Add a little helper that has the "CustomClass" available, this can be used to register without knowing the CustomClass
         providedController.AddMember (mkProvidedLiteralField "CustomClass" customClass)
 
-        //actions
+        //actions are only currently generated on view controllers
         match settings.GenerationType with
         | Generated.ViewControllers vc ->
             let firstVc = Seq.head vc
@@ -175,6 +177,7 @@ module TypeBuilder =
                          yield vc, outlet ]
                 |> List.distinctBy (fun (_, outlet) -> outlet.Property)
                 |> List.map (buildOutlet settings.BindingType)
+
             | Generated.Views views ->
                 [for view in views do
                      for outlet in view.Outlets do
