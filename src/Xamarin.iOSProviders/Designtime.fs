@@ -123,7 +123,7 @@ module TypeBuilder =
             let firstV = v |> Seq.head
             firstV.CustomClass
 
-    let buildController (settings:Settings) (config:TypeProviderConfig) =
+    let buildControls (settings:Settings) (config:TypeProviderConfig) =
         let controllerType = getControlType settings.GenerationType settings.BindingType
         let customClass = getCustomClass settings.GenerationType
         let className = if settings.IsAbstract then customClass + "Base" else customClass
