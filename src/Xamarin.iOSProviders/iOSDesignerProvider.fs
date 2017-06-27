@@ -47,12 +47,18 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
 
         let groupedViewControllers =
             query {for scene in scenes do
-                       groupValBy scene.ViewController scene.ViewController.CustomClass}
+                       groupValBy scene.ViewController scene.ViewController.CustomClass }
 
         let groupedViews =
-            query {for scene in scenes do
-                       groupValBy scene.View scene.View.CustomClass}
+            let rec proc (v:View) =
+                [ yield v
+                  yield! v.SubViews |> Seq.collect proc ]
 
+            [ for scene in scenes do
+                  match scene.ViewController.View with
+                  | Some view -> yield! proc view
+                  | None -> () ]
+            |> List.groupBy (fun v -> v.CustomClass )
 
         //generate storyboard container
         let container = ProvidedTypeDefinition(asm, ns, typeName, Some(typeof<obj>), IsErased=false)
@@ -60,11 +66,21 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
         let generatedTypes =
             [ for sc in groupedViewControllers do
                   let viewControllers = sc.AsEnumerable()
-                  yield TypeBuilder.buildController runtimeBinding viewControllers isAbstract addUnitCtor register config
+                  let settings = {IsAbstract = isAbstract
+                                  AddUnitCtor = addUnitCtor
+                                  Register = register
+                                  BindingType = runtimeBinding
+                                  GenerationType = Generated.ViewControllers viewControllers }
+                  yield TypeBuilder.buildController settings config
 
-              for v in groupedViews do
-                  let views = v.AsEnumerable()
-                  () ]
+              for views in groupedViews do
+                  let _customClass, views = views
+                  let settings = {IsAbstract = false 
+                                  AddUnitCtor = true
+                                  Register = true
+                                  BindingType = runtimeBinding
+                                  GenerationType = Generated.Views views }
+                  yield TypeBuilder.buildController settings config ]
         
         //Add the types to the container
         container.AddMembers generatedTypes
