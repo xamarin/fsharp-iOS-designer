@@ -59,14 +59,28 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
                   | Some view -> yield! proc view
                   | None -> () ]
             |> List.groupBy (fun v -> v.CustomClass )
-        let dd = groupedViews |> List.toArray
+
         //generate storyboard container
         let container = ProvidedTypeDefinition(asm, ns, typeName, Some(typeof<obj>), IsErased=false)
 
         let generatedTypes =
             [ for sc in groupedViewControllers do
                   let viewControllers = sc.AsEnumerable()
-                  yield TypeBuilder.buildController runtimeBinding viewControllers isAbstract addUnitCtor register config ]
+                  let settings = {IsAbstract = isAbstract
+                                  AddUnitCtor = addUnitCtor
+                                  Register = register
+                                  BindingType = runtimeBinding
+                                  GenerationType = Generated.ViewControllers viewControllers }
+                  yield TypeBuilder.buildController settings config
+
+              for views in groupedViews do
+                  let _customClass, views = views
+                  let settings = {IsAbstract = false
+                                  AddUnitCtor = false
+                                  Register = true
+                                  BindingType = runtimeBinding
+                                  GenerationType = Generated.Views views }
+                  yield TypeBuilder.buildController settings config ]
         
         //Add the types to the container
         container.AddMembers generatedTypes

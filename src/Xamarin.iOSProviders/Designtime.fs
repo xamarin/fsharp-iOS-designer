@@ -7,6 +7,13 @@ open Microsoft.FSharp.Core.CompilerServices
 open Microsoft.FSharp.Quotations
 open ProvidedTypes
 
+[<RequireQualifiedAccess>]
+type Generated =
+    | ViewControllers of ViewController seq
+    | Views of View seq
+
+type Settings = {IsAbstract : bool; AddUnitCtor : bool; Register : bool; BindingType: RunTime.RunTimeBinding; GenerationType : Generated }
+
 module Sanitise =
     let cleanTrailing = String.trimEnd [|':'|]
     let makeFieldName (name:string) = 
@@ -67,7 +74,7 @@ module TypeBuilder =
          actionProperty :> _
          actionBinding  :> _]
 
-    let buildOutlet (bindingType:RunTime.RunTimeBinding) (vc:ViewController, outlet:Outlet) =
+    let buildOutlet (bindingType:RunTime.RunTimeBinding) (_c, outlet:Outlet) =
         let xmlType = outlet.ElementName
         let outletField, outletProperty =
             ProvidedTypes.ProvidedPropertyWithField (Sanitise.makeFieldName outlet.Property,
@@ -75,7 +82,7 @@ module TypeBuilder =
                                                      TypeMapper.getTypeMap bindingType xmlType)
         outletProperty.AddCustomAttribute <| CustomAttributeDataExt.Make (bindingType.Assembly.GetType("Foundation.OutletAttribute", true).GetUnitConstructor ())
 
-        //Add the property and backing fields to the view controller
+        //Add the property and backing fields to the Control
         outletField, outletProperty
     
     //takes an instance returns a disposal expresion
@@ -99,17 +106,30 @@ module TypeBuilder =
                                                     else buildReleaseOutletsExpr instance fields
                                     | _ -> invalidOp "Too many arguments")
 
-    let buildController (bindingType: RunTime.RunTimeBinding) (vcs: ViewController seq) isAbstract addUnitCtor register (config:TypeProviderConfig) =
+    //get the real type of the controller proxy
+    let getControlType generatedType bindingType =
+        match generatedType with
+        | Generated.ViewControllers vcs -> vcs |> Seq.map (fun vc -> TypeMapper.getTypeMap bindingType vc.XmlType)
+        | Generated.Views vcs -> vcs |> Seq.map (fun vc -> TypeMapper.getTypeMap bindingType vc.XmlType)
+        |> Seq.head
 
-        //get the real type of the controller proxy
-        let vcsTypes = vcs |> Seq.map (fun vc -> TypeMapper.getTypeMap bindingType vc.XmlType)
-        let vc = Seq.head vcs
-        let controllerType = Seq.head vcsTypes
-        let className = if isAbstract then vc.CustomClass + "Base" else vc.CustomClass
-        let customClass = vc.CustomClass
+    let getCustomClass generatedType =
+        match generatedType with
+        | Generated.ViewControllers vcs ->
+            let firstVc = vcs |> Seq.head
+            firstVc.CustomClass
+
+        | Generated.Views v ->
+            let firstV = v |> Seq.head
+            firstV.CustomClass
+
+    let buildController (settings:Settings) (config:TypeProviderConfig) =
+        let controllerType = getControlType settings.GenerationType settings.BindingType
+        let customClass = getCustomClass settings.GenerationType
+        let className = if settings.IsAbstract then customClass + "Base" else customClass
 
         let providedController = ProvidedTypeDefinition (className, Some controllerType, IsErased = false )
-        providedController.SetAttributes (if isAbstract then TypeAttributes.Public ||| TypeAttributes.Class ||| TypeAttributes.Abstract
+        providedController.SetAttributes (if settings.IsAbstract then TypeAttributes.Public ||| TypeAttributes.Class ||| TypeAttributes.Abstract
                                           else TypeAttributes.Public ||| TypeAttributes.Class)
 
         //Were relying on the fact all controller have the IntPtr and unit constructors, At least we propagate our own errors here.
@@ -124,31 +144,43 @@ module TypeBuilder =
                        providedController.AddMember (intPtrCtor)
 
         //if set adds a () constructor
-        if addUnitCtor then
+        if settings.AddUnitCtor then
             match controllerType.TryGetUnitConstructor() with
             | None -> failwithf "No empty constructor found for type: %s" controllerType.Name
             | Some ctor -> let emptyctor = ProvidedConstructor([], InvokeCode = Expr.emptyInvoke, BaseConstructorCall = fun args -> ctor, args)
                            providedController.AddMember (emptyctor)
 
         //If register set and not isAbstract, then automatically registers using [<Register>]
-        if register && not isAbstract then
-            let register = CustomAttributeDataExt.Make (bindingType.Assembly.GetType("Foundation.RegisterAttribute", true).GetConstructor (typeof<string>), [| CustomAttributeTypedArgument (typeof<string>, customClass) |])
+        if settings.Register && not settings.IsAbstract then
+            let register = CustomAttributeDataExt.Make (settings.BindingType.Assembly.GetType("Foundation.RegisterAttribute", true).GetConstructor (typeof<string>), [| CustomAttributeTypedArgument (typeof<string>, customClass) |])
             providedController.AddCustomAttribute (register)
 
         //Add a little helper that has the "CustomClass" available, this can be used to register without knowing the CustomClass
         providedController.AddMember (mkProvidedLiteralField "CustomClass" customClass)
 
         //actions
-        let actionProvidedMembers = vc.Actions |> List.collect (buildAction bindingType)
-        providedController.AddMembers actionProvidedMembers 
+        match settings.GenerationType with
+        | Generated.ViewControllers vc ->
+            let firstVc = Seq.head vc
+            let actionProvidedMembers = firstVc.Actions |> List.collect (buildAction settings.BindingType)
+            providedController.AddMembers actionProvidedMembers 
+        | _ -> ()
       
         //outlets
         let providedOutlets =
-            [for vc in vcs do
-                 for outlet in vc.Outlets do
-                     yield vc, outlet ]
-            |> List.distinctBy (fun (_, outlet) -> outlet.Property)
-            |> List.map (buildOutlet bindingType)
+            match settings.GenerationType with
+            | Generated.ViewControllers vcs ->
+                [for vc in vcs do
+                     for outlet in vc.Outlets do
+                         yield vc, outlet ]
+                |> List.distinctBy (fun (_, outlet) -> outlet.Property)
+                |> List.map (buildOutlet settings.BindingType)
+            | Generated.Views views ->
+                [for view in views do
+                     for outlet in view.Outlets do
+                         yield view, outlet ]
+                |> List.distinctBy (fun (_, outlet) -> outlet.Property)
+                |> List.map (buildOutlet settings.BindingType)
 
         for (field, property) in providedOutlets do
             providedController.AddMembers [field :> MemberInfo; property :> _]
