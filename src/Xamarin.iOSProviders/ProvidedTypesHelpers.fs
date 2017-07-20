@@ -43,7 +43,6 @@ module ProvidedTypes =
             
             let field = ProvidedField( fieldName, typ)
             field.SetFieldAttributes FieldAttributes.Private
-            
 
             let property = ProvidedProperty(propertyName, typ, defaultArg parameters [])
             property.GetterCode <- fun args -> Expr.FieldGet(args.[0], field)
@@ -69,9 +68,7 @@ module ProvidedTypes =
     module String =
 
         let private test_null =
-            function
-            | null -> raise (ArgumentNullException "arg")
-            | _ -> ()
+            function null -> raise (ArgumentNullException "arg") | _ -> ()
 
         let capitalize (s : string) =
             test_null s
