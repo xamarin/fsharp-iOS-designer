@@ -71,7 +71,7 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
                                   Register = register
                                   BindingType = runtimeBinding
                                   GenerationType = Generated.ViewControllers viewControllers }
-                  yield TypeBuilder.buildController settings config
+                  yield TypeBuilder.buildControls settings config
 
               for views in groupedViews do
                   let _customClass, views = views
@@ -80,7 +80,7 @@ type iOSDesignerProvider(config: TypeProviderConfig) as this =
                                   Register = true
                                   BindingType = runtimeBinding
                                   GenerationType = Generated.Views views }
-                  yield TypeBuilder.buildController settings config ]
+                  yield TypeBuilder.buildControls settings config ]
         
         //Add the types to the container
         container.AddMembers generatedTypes
