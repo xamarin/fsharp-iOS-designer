@@ -107,15 +107,11 @@
   <ItemGroup>
     <Folder Include="Resources\" />
   </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.FSharp.targets" />
   <ItemGroup>
     <None Include="Info.plist" />
     <None Include="Entitlements.plist" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="fullTestViewController.fs" />
-  </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.FSharp.targets" />
-  <ItemGroup>
     <InterfaceDefinition Include="Main.storyboard" />
   </ItemGroup>
 </Project>

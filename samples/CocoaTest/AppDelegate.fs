@@ -1,4 +1,4 @@
-﻿namespace CocoaApp
+﻿namespace CocoaTest
 open System
 open Foundation
 open AppKit

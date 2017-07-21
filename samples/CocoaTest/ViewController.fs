@@ -11,8 +11,12 @@ type myViewController(handle) =
 
     override x.ViewDidLoad () =
         base.ViewDidLoad ()
-        // Do any additional setup after loading the view.
+        // Access the action, apply
         x.OnButton <- Some(fun _ -> x.View.Window.BackgroundColor <- NSColor.Red)
+        //access button outlet
+        x.myButton.Title <- "test"
+        //access label outlet
+        x.myLabel.PlaceholderString <- "test"
 
     override x.RepresentedObject
         // Update the view, if already loaded.

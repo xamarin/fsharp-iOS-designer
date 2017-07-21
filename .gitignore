@@ -6,13 +6,17 @@
 *.user
 *.sln.docstates
 
+# Xamarin Studio / monodevelop user-specific
+*.userprefs
+*.dll.mdb
+*.exe.mdb
+
 # Build results
+
 [Dd]ebug/
-[Dd]ebugPublic/
 [Rr]elease/
 x64/
 build/
-bld/
 [Bb]in/
 [Oo]bj/
 
@@ -20,18 +24,8 @@ bld/
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
 
-#NUNIT
-*.VisualState.xml
-TestResult.xml
-
-# Build Results of an ATL Project
-[Dd]ebugPS/
-[Rr]eleasePS/
-dlldata.c
-
 *_i.c
 *_p.c
-*_i.h
 *.ilk
 *.meta
 *.obj
@@ -51,11 +45,8 @@ dlldata.c
 *.vssscc
 .builds
 *.pidb
-*.svclog
+*.log
 *.scc
-
-# Chutzpah Test files
-_Chutzpah*
 
 # Visual C++ cache files
 ipch/
@@ -70,8 +61,8 @@ ipch/
 *.vsp
 *.vspx
 
-# TFS 2012 Local Workspace
-$tf/
+# Other Visual Studio data
+.vs/
 
 # Guidance Automation Toolkit
 *.gpState
@@ -79,10 +70,6 @@ $tf/
 # ReSharper is a .NET coding add-in
 _ReSharper*/
 *.[Rr]e[Ss]harper
-*.DotSettings.user
-
-# JustCode is a .NET coding addin-in
-.JustCode
 
 # TeamCity is a build add-in
 _TeamCity*
@@ -92,15 +79,7 @@ _TeamCity*
 
 # NCrunch
 *.ncrunch*
-_NCrunch_*
 .*crunch*.local.xml
-
-# MightyMoose
-*.mm.*
-AutoTest.Net/
-
-# Web workbench (sass)
-.sass-cache/
 
 # Installshield output folder
 [Ee]xpress/
@@ -119,24 +98,20 @@ DocProject/Help/html
 publish/
 
 # Publish Web Output
-*.[Pp]ublish.xml
-*.azurePubxml
+*.Publish.xml
 
-# NuGet Packages Directory
-packages/
-## TODO: If the tool you use requires repositories.config uncomment the next line
-#!packages/repositories.config
-
-# Enable "build/" folder in the NuGet Packages folder since NuGet packages use it for MSBuild targets
-# This line needs to be after the ignore of the build folder (and the packages folder if the line above has been uncommented)
-!packages/build/
+# Enable nuget.exe in the .nuget folder (though normally executables are not tracked)
+!.nuget/NuGet.exe
 
 # Windows Azure Build Output
-csx/
+csx
 *.build.csdef
 
 # Windows Store app package directory
 AppPackages/
+
+# VSCode
+.vscode/
 
 # Others
 sql/
@@ -146,10 +121,9 @@ ClientBin/
 ~$*
 *~
 *.dbmdl
-*.dbproj.schemaview
+*.[Pp]ublish.xml
 *.pfx
 *.publishsettings
-node_modules/
 
 # RIA/Silverlight projects
 Generated_Code/
@@ -162,15 +136,51 @@ UpgradeLog*.XML
 UpgradeLog*.htm
 
 # SQL Server files
-*.mdf
-*.ldf
+App_Data/*.mdf
+App_Data/*.ldf
 
-# Business Intelligence projects
-*.rdl.data
-*.bim.layout
-*.bim_*.settings
 
-# Microsoft Fakes
-FakesAssemblies/
+#LightSwitch generated files
+GeneratedArtifacts/
+_Pvt_Extensions/
+ModelManifest.xml
 
-*.userprefs
+# =========================
+# Windows detritus
+# =========================
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Mac desktop service store files
+.DS_Store
+
+# ===================================================
+# Exclude F# project specific directories and files
+# ===================================================
+
+# NuGet Packages Directory
+packages/
+
+# Test results produced by build
+TestResults.xml
+
+# Nuget outputs
+nuget/*.nupkg
+release.cmd
+release.sh
+localpackages/
+paket-files
+*.orig
+.paket/paket.exe
+docsrc/content/license.md
+docsrc/content/release-notes.md
+.fake
+docsrc/tools/FSharp.Formatting.svclog
