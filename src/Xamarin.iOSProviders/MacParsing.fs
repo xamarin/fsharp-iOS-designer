@@ -30,13 +30,14 @@ module Mac =
                            | true, v -> Some v
                            | false, _ -> None
                            
-    let outletMapping tryLookup outlet = maybe {
-        let! prop = outlet |> tryGetAttribute "property"
-        let! dest = outlet |> tryGetAttribute "destination"
-        let! (destElement : XElement) = tryLookup dest.Value
-        let elementName = destElement.Name.LocalName
-        return {Property=prop.Value; ElementName=elementName } }
-                
+    let outletMapping (tryLookup: string -> XElement option) outlet =
+        maybe {
+            let! prop = outlet |> tryGetAttribute "property"
+            let! dest = outlet |> tryGetAttribute "destination"
+            let! destElement = tryLookup dest.Value
+            let elementName = destElement.Name.LocalName
+            return {Property=prop.Value; ElementName=elementName } }
+                    
     let actionMapping tryLookup action = maybe {
         let! selector = action |> tryGetAttribute "selector"
         //<button> <connections> <action/> </connections> </button>
