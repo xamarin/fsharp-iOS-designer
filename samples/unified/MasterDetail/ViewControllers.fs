@@ -22,9 +22,9 @@ type DataSource (controller:UITableViewController) =
 
     // Customize the appearance of table view cells.
     override x.GetCell (tableView, indexPath) =         
-        let cell = tableView.DequeueReusableCell (cellId, indexPath)
+        let cell = tableView.DequeueReusableCell(cellId, indexPath) :?> Container.myviewcell
         cell.TextLabel.Text <- x.Items.[indexPath.Row].ToString ()
-        cell
+        cell :> UITableViewCell
 
     override x.CanEditRow (tableView, indexPath) =
         // Return false if you do not want the specified item to be editable.
@@ -77,6 +77,7 @@ type MasterDetailController (handle) =
             dataSource.Items.Insert (0, DateTime.Now)
             use indexPath = NSIndexPath.FromRowSection (nint 0, nint 0)
             x.TableView.InsertRows ([|indexPath|], UITableViewRowAnimation.Automatic))
+           
 
     override x.DidReceiveMemoryWarning () =
         // Releases the view if it doesn't have a superview.
@@ -93,6 +94,7 @@ type MasterDetailController (handle) =
         x.NavigationItem.SetRightBarButtonItem (addButton, false)
         dataSource <- new DataSource(x)
         x.TableView.Source <- dataSource
+        x.TableView.RowHeight <- UITableView.AutomaticDimension
 
     override x.PrepareForSegue (segue, sender) = 
         if segue.Identifier = "showDetail" then
