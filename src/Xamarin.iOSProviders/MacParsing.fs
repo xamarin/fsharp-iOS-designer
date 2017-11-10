@@ -1,9 +1,6 @@
 ﻿namespace Xamarin.UIProviders.DesignTime
-open System
 open System.IO
-open System.Xml
 open System.Xml.Linq
-open System.Linq
 
 [<AutoOpen>]
 module XmlHelpers =
@@ -58,11 +55,11 @@ module Mac =
             |> Seq.choose (actionMapping tryLookup)
             |> Seq.toList
         
-        return {XmlType = vc.Name.LocalName
-                CustomClass = customClass.Value
-                Outlets = outlets
-                Actions = actions
-                View = None } }
+        return { XmlType = vc.Name.LocalName
+                 CustomClass = customClass.Value
+                 Outlets = outlets
+                 Actions = actions
+                 View = None } }
     
     let scenesFromXDoc (xdoc:XDocument) =
         let tryLookup = createIdLookup xdoc
@@ -71,7 +68,7 @@ module Mac =
                                      vcElement
                                      |> Seq.choose (viewControllerMapping tryLookup)
                                      |> Seq.map (fun vc -> {ViewController=vc}))
-                                     
+
     let scenesFromStoryBoardFileName (sb:string) =
-        let xdoc = XDocument.Load(new StreamReader(sb, true))
+        let xdoc = XDocument.Load sb
         scenesFromXDoc xdoc
