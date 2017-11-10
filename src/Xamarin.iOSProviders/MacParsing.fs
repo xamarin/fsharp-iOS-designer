@@ -4,8 +4,6 @@ open System.IO
 open System.Xml
 open System.Xml.Linq
 open System.Linq
-open ExtCore
-open ExtCore.Control
 
 [<AutoOpen>]
 module XmlHelpers =

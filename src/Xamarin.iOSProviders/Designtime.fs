@@ -14,6 +14,10 @@ type Generated =
 
 type Settings = {IsAbstract : bool; AddUnitCtor : bool; Register : bool; BindingType: RunTime.RunTimeBinding; GenerationType : Generated }
 
+module String =
+    let trimEnd trimChars (s:string) =
+        s.TrimEnd trimChars
+
 module Sanitise =
     let cleanTrailing = String.trimEnd [|':'|]
     let makeFieldName (name:string) = 

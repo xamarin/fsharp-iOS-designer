@@ -1,8 +1,6 @@
 ﻿namespace Xamarin.UIProviders.DesignTime
 open System
 open System.Xml.Linq
-open ExtCore
-open ExtCore.Control
 open MonoTouch.Design
 
 module IOS =
@@ -22,18 +20,20 @@ module IOS =
             return {Selector=ac.Selector;ElementName= destination.Element.Name.LocalName}}
 
     let rec createView (view:ProxiedView) =
-        maybe {
-            let! view = view |> Option.ofObj
+        view
+        |> Option.ofObj
+        |> Option.bind (fun v ->
             if not (String.IsNullOrWhiteSpace(view.CustomClass))
             then
-                return { View.CustomClass = view.CustomClass
-                         XmlType = view.Element.Name.LocalName
-                         Outlets = view.Outlets |> Seq.choose (vOutletMap view) |> Seq.toList
-                         SubViews = view.Subviews
-                                    |> Seq.map createView
-                                    |> Seq.choose id
-                                    |> Seq.toList }
-            else return! None}
+                { View.CustomClass = view.CustomClass
+                  XmlType = view.Element.Name.LocalName
+                  Outlets = view.Outlets |> Seq.choose (vOutletMap view) |> Seq.toList
+                  SubViews = view.Subviews
+                             |> Seq.map createView
+                             |> Seq.choose id
+                             |> Seq.toList } |> Some
+            else 
+                None)
 
     let createScene (scene : MonoTouch.Design.Scene) =
         let vc = scene.ViewController
@@ -45,7 +45,7 @@ module IOS =
                    |> Seq.collect (fun sv -> sv.Actions)
                    |> Seq.distinct
                    |> Seq.choose (actionMap vc)
-                   |> Seq.toList } |> Option.fill List.empty
+                   |> Seq.toList } |> Option.defaultValue List.empty
 
         let view = createView vc.View
 
