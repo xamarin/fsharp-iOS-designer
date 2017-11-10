@@ -11,7 +11,7 @@ open System.Runtime.CompilerServices
 [<assembly: AssemblyCopyright("2017")>]
 [<assembly: AssemblyTrademark("")>]
 [<assembly: AssemblyVersion("1.0.0.0")>]
-[<assembly:TypeProviderAssembly("Xamarin.UIProviders.DesignTime")>]
+[<assembly: TypeProviderAssembly("Xamarin.UIProvider.DesignTime")>]
 //[<assembly: AssemblyDelaySign(false)>]
 //[<assembly: AssemblyKeyFile("")>]
 ()
