@@ -48,9 +48,6 @@
       <HintPath>/Applications/Visual Studio.app/Contents/Resources/lib/monodevelop/AddIns/MonoDevelop.IPhone/MonoTouch.Design.dll</HintPath>
     </Reference>
     <Reference Include="System.Drawing" />
-    <Reference Include="Xamarin.Designer">
-      <HintPath>/Applications/Visual Studio.app/Contents/Resources/lib/monodevelop/AddIns/Xamarin.Ide/Xamarin.Designer.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
   <ItemGroup>
