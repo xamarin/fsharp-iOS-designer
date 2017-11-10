@@ -17,5 +17,6 @@
     <files>
         <file src="build/Xamarin.UIProvider.iOSRuntime.dll" target="lib/Xamarin.UIProvider.iOSRuntime.dll" />
         <file src="build/Xamarin.UIProvider.DesignTime.dll" target="lib/Xamarin.UIProvider.DesignTime.dll" />
+        <file src="build/MonoTouch.Design.dll" target="lib/MonoTouch.dll" />
     </files>
 </package>
