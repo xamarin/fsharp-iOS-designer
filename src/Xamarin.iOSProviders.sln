@@ -6,7 +6,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{5A197B
 		..\paket.dependencies = ..\paket.dependencies
 	EndProjectSection
 EndProject
-Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "Xamarin.UIProviders.DesignTime", "Xamarin.iOSProviders\Xamarin.UIProviders.DesignTime.fsproj", "{DD17E7B0-6EE1-4862-80F8-E0CAB67D6137}"
+Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "Xamarin.UIProvider.DesignTime", "Xamarin.iOSProviders\Xamarin.UIProvider.DesignTime.fsproj", "{DD17E7B0-6EE1-4862-80F8-E0CAB67D6137}"
 EndProject
 Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "Xamarin.UIProvider.TVOSRuntime", "Xamarin.UIProvider.TVOSRuntime\Xamarin.UIProvider.TVOSRuntime.fsproj", "{4F84B7DD-A5E0-4BC3-9C9F-565988030202}"
 EndProject

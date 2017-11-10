@@ -7,7 +7,7 @@
         <authors>Xamarin</authors>
         <owners>Xamarin</owners>
         <references>
-          <reference file="build/Xamarin.UIProvider.iOSRuntime.dll" />
+          <reference file="Xamarin.UIProvider.iOSRuntime.dll" />
         </references>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>Xamarin iOS UI type provider</description>
@@ -16,6 +16,6 @@
     </metadata>
     <files>
         <file src="build/Xamarin.UIProvider.iOSRuntime.dll" target="lib/Xamarin.UIProvider.iOSRuntime.dll" />
-        <file src="build/Xamarin.Designer.dll" target="lib/Xamarin.Designer.dll" />
+        <file src="build/Xamarin.UIProvider.DesignTime.dll" target="lib/Xamarin.UIProvider.DesignTime.dll" />
     </files>
 </package>
