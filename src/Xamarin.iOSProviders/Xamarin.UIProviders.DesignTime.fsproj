@@ -11,7 +11,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <OutputPath>..\Build\Debug</OutputPath>
+    <OutputPath>..\..\build</OutputPath>
     <DefineConstants>DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <PlatformTarget>
@@ -24,7 +24,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\Build\Release</OutputPath>
+    <OutputPath>..\..\build</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <PlatformTarget>
     </PlatformTarget>
@@ -38,6 +38,7 @@
     <StartProgram>/Applications/Visual Studio.app/Contents/Resources/lib/monodevelop/bin/VisualStudio.exe</StartProgram>
     <StartArguments>--no-redirect</StartArguments>
     <StartWorkingDirectory>/Applications/Visual Studio.app/Contents/Resources/lib/monodevelop/bin/</StartWorkingDirectory>
+    <ExternalConsole>false</ExternalConsole>
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <ItemGroup>

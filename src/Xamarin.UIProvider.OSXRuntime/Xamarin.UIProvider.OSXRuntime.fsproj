@@ -16,7 +16,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\Build\Debug</OutputPath>
+    <OutputPath>..\..\build</OutputPath>
     <DefineConstants>DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <ConsolePause>false</ConsolePause>
@@ -29,10 +29,11 @@
     <CodeSignEntitlements></CodeSignEntitlements>
     <CodeSignResourceRules></CodeSignResourceRules>
     <XamMacArch></XamMacArch>
+    <AOTMode>None</AOTMode>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>true</Optimize>
-    <OutputPath>..\Build\Release</OutputPath>
+    <OutputPath>..\..\build</OutputPath>
     <DefineConstants></DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <ConsolePause>false</ConsolePause>
@@ -46,6 +47,7 @@
     <CodeSignEntitlements></CodeSignEntitlements>
     <CodeSignResourceRules></CodeSignResourceRules>
     <XamMacArch></XamMacArch>
+    <AOTMode>None</AOTMode>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
