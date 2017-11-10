@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+    <metadata>
+        <id>Xamarin.UIProvider.iOS</id>
+        <version>1.0.0.0</version>
+        <title>Xamarin.UIProvider.iOS</title>
+        <authors>Xamarin</authors>
+        <owners>Xamarin</owners>
+        <references>
+          <reference file="build/Xamarin.UIProvider.iOSRuntime.dll" />
+        </references>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Xamarin iOS UI type provider</description>
+        <copyright>MIT License</copyright>
+        <language>en-US</language>
+    </metadata>
+    <files>
+        <file src="build/Xamarin.UIProvider.iOSRuntime.dll" target="lib/Xamarin.UIProvider.iOSRuntime.dll" />
+        <file src="build/Xamarin.Designer.dll" target="lib/Xamarin.Designer.dll" />
+    </files>
+</package>
